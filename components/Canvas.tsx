@@ -19,6 +19,8 @@ interface CanvasProps {
   highlightedNodeIds?: Set<string>; 
 }
 
+const SNAP_GRID = 20;
+
 const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeAction, selectedNodeId, onSelectNode, onNodeMove, highlightedEdgeIds, highlightedNodeIds }, ref) => {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(0.8);
@@ -113,7 +115,15 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeActi
     if (draggedNode) {
         const deltaX = (e.clientX - draggedNode.startX) / zoom;
         const deltaY = (e.clientY - draggedNode.startY) / zoom;
-        onNodeMove(draggedNode.id, draggedNode.initialNodeX + deltaX, draggedNode.initialNodeY + deltaY);
+        
+        let newX = draggedNode.initialNodeX + deltaX;
+        let newY = draggedNode.initialNodeY + deltaY;
+
+        // Snap to Grid
+        newX = Math.round(newX / SNAP_GRID) * SNAP_GRID;
+        newY = Math.round(newY / SNAP_GRID) * SNAP_GRID;
+
+        onNodeMove(draggedNode.id, newX, newY);
         return;
     }
     
@@ -183,7 +193,15 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeActi
         if (draggedNode) {
             const deltaX = (touch.clientX - draggedNode.startX) / zoom;
             const deltaY = (touch.clientY - draggedNode.startY) / zoom;
-            onNodeMove(draggedNode.id, draggedNode.initialNodeX + deltaX, draggedNode.initialNodeY + deltaY);
+            
+            let newX = draggedNode.initialNodeX + deltaX;
+            let newY = draggedNode.initialNodeY + deltaY;
+            
+            // Snap to Grid logic for Touch as well
+            newX = Math.round(newX / SNAP_GRID) * SNAP_GRID;
+            newY = Math.round(newY / SNAP_GRID) * SNAP_GRID;
+
+            onNodeMove(draggedNode.id, newX, newY);
         } else if (isPanning && lastTouchRef.current) {
             const dx = touch.clientX - lastTouchRef.current.x;
             const dy = touch.clientY - lastTouchRef.current.y;
@@ -229,6 +247,9 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeActi
       // GOLDEN THREAD LOGIC
       const isHighlighted = highlightedEdgeIds?.has(edge.id);
       const isDimmed = highlightedEdgeIds && highlightedEdgeIds.size > 0 && !isHighlighted;
+      
+      // LOADING STATE (Data Flow Animation)
+      const isLoading = targetNode.isLoading;
 
       return (
         <g key={edge.id} className="transition-all duration-300">
@@ -246,6 +267,18 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeActi
                 strokeOpacity={isDimmed ? 0.2 : 1}
                 filter={isHighlighted ? "url(#glow)" : ""}
             />
+            
+            {/* Animated Flow Line (Only if loading) */}
+            {isLoading && (
+                <path 
+                    d={path} 
+                    stroke="#3B82F6" 
+                    strokeWidth="2" 
+                    fill="none" 
+                    strokeDasharray="10,10"
+                    className="animate-flow"
+                />
+            )}
             
             {/* Target Dot */}
             <circle cx={targetX} cy={targetY} r={isHighlighted ? "6" : "4"} fill={isHighlighted ? "#F59E0B" : "white"} stroke={isHighlighted ? "#F59E0B" : "#CBD5E1"} strokeWidth="2" opacity={isDimmed ? 0.2 : 1}/>
@@ -298,13 +331,45 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeActi
       const mapHeight = 120;
       const worldWidth = MAX_X - MIN_X + 1000;
       const worldHeight = MAX_Y - MIN_Y + 1000;
+      
+      // Calculate scale to fit world into minimap
       const scaleX = mapWidth / worldWidth;
       const scaleY = mapHeight / worldHeight;
       const scale = Math.min(scaleX, scaleY);
 
+      // Handle Minimap Click for Panning
+      const handleMinimapClick = (e: React.MouseEvent<HTMLDivElement>) => {
+          e.stopPropagation();
+          if (!containerRef.current) return;
+          
+          const rect = e.currentTarget.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const clickY = e.clientY - rect.top;
+          
+          // Map click back to World Coordinates
+          // visualX = (worldX - MIN_X + 500) * scale
+          // worldX = (visualX / scale) - 500 + MIN_X
+          
+          const targetWorldX = (clickX / scale) - 500 + MIN_X;
+          const targetWorldY = (clickY / scale) - 500 + MIN_Y;
+          
+          // Center the viewport on this world coordinate
+          // offset.x = (containerWidth / 2) - (worldX * zoom)
+          
+          const { width, height } = containerRef.current.getBoundingClientRect();
+          
+          setOffset({
+              x: (width / 2) - (targetWorldX * zoom),
+              y: (height / 2) - (targetWorldY * zoom)
+          });
+      };
+
       return (
-          <div className="absolute bottom-8 left-8 w-[200px] h-[120px] bg-white/90 border border-slate-200 rounded-lg shadow-lg overflow-hidden hidden md:block z-50 pointer-events-none opacity-80">
-              <div className="relative w-full h-full">
+          <div 
+            className="absolute bottom-8 left-8 w-[200px] h-[120px] bg-white/90 border border-slate-200 rounded-lg shadow-lg overflow-hidden hidden md:block z-50 opacity-90 cursor-crosshair hover:opacity-100 transition-opacity"
+            onMouseDown={handleMinimapClick}
+          >
+              <div className="relative w-full h-full pointer-events-none">
                   {nodes.map(node => (
                       <div 
                         key={node.id}
@@ -317,7 +382,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeActi
                   ))}
                   {/* Viewport Indicator */}
                   <div 
-                    className="absolute border border-blue-500 bg-blue-500/10 rounded-sm"
+                    className="absolute border-2 border-blue-500/50 bg-blue-500/10 rounded-sm"
                     style={{
                         left: (-offset.x - MIN_X + 500) * scale / zoom,
                         top: (-offset.y - MIN_Y + 500) * scale / zoom,

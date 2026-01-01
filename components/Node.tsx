@@ -40,7 +40,7 @@ const Node: React.FC<NodeProps> = ({ data, selected, onClick, onAction, isGridVi
 
   const getLoadingText = () => {
       if (!data.isLoading) return "";
-      if (data.type === NodeType.CREATIVE) return "Designing Asset...";
+      if (data.type === NodeType.CREATIVE) return "Generating Asset...";
       if (data.type === NodeType.ANGLE) return "Constructing Angles...";
       if (data.type === NodeType.BIG_IDEA_NODE) return "Strategizing...";
       return "Processing...";
@@ -48,7 +48,7 @@ const Node: React.FC<NodeProps> = ({ data, selected, onClick, onAction, isGridVi
 
   const getStatusStyles = () => {
     if (isGhost) return {
-        container: 'bg-slate-50/30 ring-1 ring-slate-200 border border-dashed border-slate-300 opacity-60 grayscale',
+        container: 'bg-slate-50/60 ring-1 ring-slate-200 border border-dashed border-slate-300 opacity-60 grayscale backdrop-blur-sm',
         header: 'bg-slate-100/50 border-b border-slate-200 text-slate-400',
         text: 'text-slate-400',
         accent: 'text-slate-400',
@@ -56,16 +56,16 @@ const Node: React.FC<NodeProps> = ({ data, selected, onClick, onAction, isGridVi
         handle: 'bg-slate-200'
     };
     if (isScaling) return {
-      container: 'bg-white ring-1 ring-amber-200 shadow-xl shadow-amber-500/5',
-      header: 'bg-amber-50/50 border-b border-amber-100 text-amber-800',
+      container: 'bg-white/90 ring-1 ring-amber-200 shadow-xl shadow-amber-500/5 backdrop-blur-sm',
+      header: 'bg-amber-50/80 border-b border-amber-100 text-amber-800',
       text: 'text-amber-950',
       accent: 'text-amber-600',
       iconBg: 'bg-amber-100',
       handle: 'bg-amber-400'
     };
     if (selected) return {
-      container: 'bg-white ring-2 ring-blue-600 shadow-2xl shadow-blue-500/20',
-      header: 'bg-blue-50/50 border-b border-blue-100 text-blue-700',
+      container: 'bg-white/95 ring-2 ring-blue-600 shadow-2xl shadow-blue-500/20 backdrop-blur-md',
+      header: 'bg-blue-50/80 border-b border-blue-100 text-blue-700',
       text: 'text-slate-900',
       accent: 'text-blue-600',
       iconBg: 'bg-blue-100',
@@ -74,8 +74,8 @@ const Node: React.FC<NodeProps> = ({ data, selected, onClick, onAction, isGridVi
     
     // LEVEL 1: FOUNDATION (Research)
     if (data.type === NodeType.ROOT || data.type === NodeType.MASS_DESIRE_NODE || data.type === NodeType.PERSONA) return {
-        container: 'bg-white ring-1 ring-rose-200 shadow-lg shadow-rose-500/5',
-        header: 'bg-rose-50/50 border-b border-rose-100 text-rose-800',
+        container: 'bg-white/90 ring-1 ring-rose-200 shadow-lg shadow-rose-500/5 backdrop-blur-sm',
+        header: 'bg-rose-50/80 border-b border-rose-100 text-rose-800',
         text: 'text-slate-900',
         accent: 'text-rose-600',
         iconBg: 'bg-rose-100',
@@ -84,8 +84,8 @@ const Node: React.FC<NodeProps> = ({ data, selected, onClick, onAction, isGridVi
 
     // LEVEL 2: CONCEPT (Strategy)
     if (data.type === NodeType.BIG_IDEA_NODE) return {
-        container: 'bg-white ring-1 ring-yellow-200 shadow-lg shadow-yellow-500/5',
-        header: 'bg-yellow-50/50 border-b border-yellow-100 text-yellow-800',
+        container: 'bg-white/90 ring-1 ring-yellow-200 shadow-lg shadow-yellow-500/5 backdrop-blur-sm',
+        header: 'bg-yellow-50/80 border-b border-yellow-100 text-yellow-800',
         text: 'text-slate-900',
         accent: 'text-yellow-600',
         iconBg: 'bg-yellow-100',
@@ -98,8 +98,8 @@ const Node: React.FC<NodeProps> = ({ data, selected, onClick, onAction, isGridVi
         const isLogic = data.type === NodeType.MECHANISM_NODE;
         const colorClass = isLogic ? 'cyan' : 'orange';
         return {
-            container: `bg-white ring-1 ring-${colorClass}-200 shadow-lg shadow-${colorClass}-500/5`,
-            header: `bg-${colorClass}-50/50 border-b border-${colorClass}-100 text-${colorClass}-800`,
+            container: `bg-white/90 ring-1 ring-${colorClass}-200 shadow-lg shadow-${colorClass}-500/5 backdrop-blur-sm`,
+            header: `bg-${colorClass}-50/80 border-b border-${colorClass}-100 text-${colorClass}-800`,
             text: 'text-slate-900',
             accent: `text-${colorClass}-600`,
             iconBg: `bg-${colorClass}-100`,
@@ -109,8 +109,8 @@ const Node: React.FC<NodeProps> = ({ data, selected, onClick, onAction, isGridVi
 
     // LEVEL 4: ASSEMBLY (Angle)
     if (data.type === NodeType.ANGLE) return {
-        container: 'bg-white ring-2 ring-indigo-200 shadow-xl shadow-indigo-500/10',
-        header: 'bg-indigo-50/50 border-b border-indigo-100 text-indigo-800',
+        container: 'bg-white/90 ring-2 ring-indigo-200 shadow-xl shadow-indigo-500/10 backdrop-blur-sm',
+        header: 'bg-indigo-50/80 border-b border-indigo-100 text-indigo-800',
         text: 'text-slate-900',
         accent: 'text-indigo-600',
         iconBg: 'bg-indigo-100',
@@ -118,8 +118,8 @@ const Node: React.FC<NodeProps> = ({ data, selected, onClick, onAction, isGridVi
     };
 
     return {
-      container: 'bg-white ring-1 ring-slate-200 shadow-md hover:shadow-xl', 
-      header: 'bg-slate-50/50 border-b border-slate-100 text-slate-500',
+      container: 'bg-white/90 ring-1 ring-slate-200 shadow-md hover:shadow-xl backdrop-blur-sm', 
+      header: 'bg-slate-50/80 border-b border-slate-100 text-slate-500',
       text: 'text-slate-800',
       accent: 'text-slate-500',
       iconBg: 'bg-slate-100',
@@ -204,15 +204,33 @@ const Node: React.FC<NodeProps> = ({ data, selected, onClick, onAction, isGridVi
 
       <div className={`p-4 flex flex-col gap-3 bg-white/50 rounded-b-xl flex-1 ${isGhost ? 'opacity-50' : ''}`}>
         
-        {data.type === NodeType.CREATIVE && data.imageUrl && (
-           <div className="relative w-full aspect-square rounded-lg overflow-hidden border border-slate-100 group shadow-sm bg-slate-50 select-none pointer-events-none">
-             <img src={data.imageUrl} alt="Creative" className="w-full h-full object-cover mix-blend-multiply" />
-             <div className="absolute bottom-2 left-2 right-2 flex justify-between">
-                <span className="inline-block px-2 py-1 bg-white/90 backdrop-blur-sm border border-slate-100 shadow-sm rounded text-[10px] text-slate-800 font-medium truncate max-w-[180px]">
-                    {data.format}
-                </span>
-             </div>
-           </div>
+        {/* CREATIVE NODE VISUALS */}
+        {data.type === NodeType.CREATIVE && (
+            <div className="relative w-full aspect-square rounded-lg overflow-hidden border border-slate-100 group shadow-sm bg-slate-50 select-none pointer-events-none">
+                {data.isLoading ? (
+                    // SKELETON LOADER
+                    <div className="w-full h-full bg-slate-200 animate-pulse flex flex-col items-center justify-center p-6 gap-3">
+                        <div className="w-12 h-12 rounded-full bg-slate-300"></div>
+                        <div className="w-2/3 h-2 bg-slate-300 rounded"></div>
+                        <div className="w-1/2 h-2 bg-slate-300 rounded"></div>
+                        <span className="text-[10px] font-bold text-slate-400 mt-2">Generating Pixels...</span>
+                    </div>
+                ) : data.imageUrl ? (
+                    <>
+                        <img src={data.imageUrl} alt="Creative" className="w-full h-full object-cover mix-blend-multiply" />
+                        <div className="absolute bottom-2 left-2 right-2 flex justify-between">
+                            <span className="inline-block px-2 py-1 bg-white/90 backdrop-blur-sm border border-slate-100 shadow-sm rounded text-[10px] text-slate-800 font-medium truncate max-w-[180px]">
+                                {data.format}
+                            </span>
+                        </div>
+                    </>
+                ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 p-4 text-center">
+                        <ImageIcon className="w-8 h-8 mb-2" />
+                        <span className="text-xs">No visual generated</span>
+                    </div>
+                )}
+            </div>
         )}
 
         <div>

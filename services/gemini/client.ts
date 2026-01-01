@@ -5,13 +5,29 @@ import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 const apiKey = process.env.API_KEY || "";
 export const ai = new GoogleGenAI({ apiKey });
 
-// Shared Utility
+// Shared Utility for Robust JSON Extraction
 export function extractJSON<T>(text: string): T {
   try {
-    const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    return JSON.parse(cleanText) as T;
+    // 1. Try to find JSON inside markdown code blocks first
+    const codeBlockMatch = text.match(/```json([\s\S]*?)```/);
+    if (codeBlockMatch && codeBlockMatch[1]) {
+      return JSON.parse(codeBlockMatch[1].trim()) as T;
+    }
+
+    // 2. If no code block, try to find the first '{' and last '}'
+    const firstOpen = text.indexOf('{');
+    const lastClose = text.lastIndexOf('}');
+    
+    if (firstOpen !== -1 && lastClose !== -1) {
+        const jsonStr = text.substring(firstOpen, lastClose + 1);
+        return JSON.parse(jsonStr) as T;
+    }
+    
+    // 3. Last resort: Try parsing the whole text
+    return JSON.parse(text) as T;
   } catch (e) {
     console.error("JSON Parse Error", e, text);
+    // Return empty object to prevent crash, but log error
     return {} as T;
   }
 }
@@ -26,6 +42,12 @@ export async function generateWithRetry(params: any, retries = 3, delay = 1000):
     try {
       // Create a fresh request each time to avoid "Response body object should not be disturbed" errors
       const response = await ai.models.generateContent(params);
+      
+      // Basic check if response has content
+      if (!response.text && !response.candidates) {
+          throw new Error("Empty response from Gemini");
+      }
+      
       return response;
     } catch (error: any) {
       lastError = error;

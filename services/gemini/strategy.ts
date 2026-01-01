@@ -273,7 +273,6 @@ export const generateHooks = async (
   const strategyMode = project.strategyMode || StrategyMode.LOGIC;
   const langInstruction = getLanguageInstruction(project.targetCountry || "Indonesia", project.languageRegister || LanguageRegister.CASUAL);
   
-  const canRevealProduct = strategyMode === StrategyMode.OFFER;
   const awareness = project.marketAwareness || MarketAwareness.PROBLEM_AWARE;
 
   let hookInstruction = "";
@@ -291,7 +290,7 @@ export const generateHooks = async (
       hookInstruction = `
       **DIRECT RESPONSE HOOKS:**
       Focus on the Mechanism, the Benefit, or the Offer.
-      ${canRevealProduct ? 'Boleh sebut nama produk: ' + project.productName : 'JANGAN sebut nama produk. Gunakan: "Trik ini", "Rahasia ini", "Satu hal ini".'}
+      ${strategyMode === StrategyMode.OFFER ? 'Boleh sebut nama produk: ' + project.productName : 'JANGAN sebut nama produk. Gunakan: "Trik ini", "Rahasia ini", "Satu hal ini".'}
       `;
   }
 

@@ -122,6 +122,10 @@ export const generateCreativeStrategy = async (
 
   // DYNAMIC STRATEGY DIRECTION
   let strategyInstruction = "";
+  
+  // ANDROMEDA LOGIC: Native Ads should NEVER look like ads.
+  const isNative = [CreativeFormat.IG_STORY_TEXT, CreativeFormat.PHONE_NOTES, CreativeFormat.UGLY_VISUAL].includes(format);
+  
   if (strategyMode === StrategyMode.OFFER) {
       strategyInstruction = `
         **PRIORITY: CONVERSION & OFFER (HARD SELL)**
@@ -145,6 +149,15 @@ export const generateCreativeStrategy = async (
         - Copy Tone: Empathetic, raw, educational. Explain WHY it works.
       `;
   }
+  
+  if (isNative) {
+      strategyInstruction += `
+      ** ANDROMEDA RULE: NATIVE/UGLY MODE **
+      - This must look AMATEUR. Do not make it polished.
+      - Use "Twitter Speak" or "Notes App" style.
+      - Visuals should look like they were taken with a shaky phone.
+      `;
+  }
 
   // USE THE SOURCE OF TRUTH FOR FORMAT INSTRUCTIONS
   const formatInstruction = getFormatTextGuide(format);
@@ -158,12 +171,12 @@ export const generateCreativeStrategy = async (
     Target Country: ${country} (Native Language for Copy & Embedded Text)
     Language Register: ${register}
 
-    **CORE INPUTS:**
+    **CORE INPUTS (ROOT CONTEXT):**
     Product: ${project.productName} - ${project.productDescription}
     Winning Hook/Angle: "${angle}"
     Mechanism Logic: ${mech?.ums || "Standard benefit"}
     
-    **PERSONA DATA:**
+    **PERSONA DATA (RESEARCH CONTEXT):**
     Who: ${persona.name || "Target User"}
     Symptoms: ${personaPain}
     ${story ? `Narrative Context: ${story.narrative}` : ''}

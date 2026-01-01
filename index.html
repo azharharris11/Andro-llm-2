@@ -61,6 +61,15 @@
         }
       }
 
+      /* Data Flow Animation for Connections */
+      @keyframes flowAnimation {
+        from { stroke-dashoffset: 20; }
+        to { stroke-dashoffset: 0; }
+      }
+      .animate-flow {
+        animation: flowAnimation 1s linear infinite;
+      }
+
       /* Dot Pattern Background - Modern Clean */
       .bg-dot {
         background-image: radial-gradient(#CBD5E1 1.5px, transparent 1.5px);
