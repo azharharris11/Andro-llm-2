@@ -253,6 +253,37 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeActi
       );
     });
   };
+  
+  // BACKGROUND ZONES RENDERER
+  const renderZones = () => {
+      const height = 4000;
+      const startY = -2000;
+      
+      // We estimate x positions based on our auto-layout logic
+      // Level 1: 0 - 800 (Research)
+      // Level 2 & 3: 800 - 1800 (Concept & Structure)
+      // Level 4 & 5: 1800+ (Execution)
+      
+      return (
+          <g className="pointer-events-none opacity-40 select-none">
+              {/* Zone 1: RESEARCH */}
+              <rect x="-1000" y={startY} width="1600" height={height} fill="#fff1f2" opacity="0.3" />
+              <text x="100" y="-300" fontSize="120" fontWeight="bold" fill="#fda4af" opacity="0.3">RESEARCH</text>
+              
+              {/* Zone 2: STRATEGY */}
+              <rect x="600" y={startY} width="1200" height={height} fill="#fffbeb" opacity="0.3" />
+              <text x="1000" y="-300" fontSize="120" fontWeight="bold" fill="#fcd34d" opacity="0.3">STRATEGY</text>
+              
+              {/* Zone 3: EXECUTION */}
+              <rect x="1800" y={startY} width="3000" height={height} fill="#eff6ff" opacity="0.3" />
+              <text x="2200" y="-300" fontSize="120" fontWeight="bold" fill="#93c5fd" opacity="0.3">EXECUTION</text>
+              
+              {/* Dividers */}
+              <line x1="600" y1={startY} x2="600" y2={startY + height} stroke="#e2e8f0" strokeDasharray="20,20" strokeWidth="4" />
+              <line x1="1800" y1={startY} x2="1800" y2={startY + height} stroke="#e2e8f0" strokeDasharray="20,20" strokeWidth="4" />
+          </g>
+      );
+  };
 
   // MINI MAP CALCULATION
   const renderMiniMap = () => {
@@ -331,15 +362,10 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeActi
         {/* Infinite Dot Background */}
         <div className="absolute top-[-5000px] bottom-[-5000px] left-[-5000px] w-[8000px] bg-dot opacity-60 pointer-events-none"></div>
 
-        {/* LAB Label */}
-        <div className="absolute top-[-250px] left-0 w-[1000px] flex justify-center pointer-events-none select-none">
-          <div className="flex flex-col items-center opacity-20">
-            <Microscope className="w-64 h-64 text-slate-400 mb-4" strokeWidth={0.5} />
-            <div className="text-[8em] leading-none font-display font-bold text-slate-400 tracking-tighter">LAB</div>
-          </div>
-        </div>
-
-        <svg className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-visible">{renderEdges()}</svg>
+        <svg className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-visible">
+            {renderZones()}
+            {renderEdges()}
+        </svg>
 
         {nodes.map(node => (
           <Node 
@@ -356,10 +382,10 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ nodes, edges, onNodeActi
       {/* LEGEND - Positioned above Mini Map */}
       <div className="absolute bottom-44 left-8 p-3 bg-white/90 backdrop-blur border border-slate-200 rounded-xl shadow-lg z-40 hidden md:flex flex-col gap-2 w-[200px]">
           <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Flow Legend</h4>
-          <div className="flex items-center gap-2 text-[10px] text-slate-600 font-medium"><div className="w-2.5 h-2.5 rounded bg-rose-100 border border-rose-300"></div> Mass Desire (Pain)</div>
-          <div className="flex items-center gap-2 text-[10px] text-slate-600 font-medium"><div className="w-2.5 h-2.5 rounded bg-white border border-slate-300"></div> Persona / Angle</div>
-          <div className="flex items-center gap-2 text-[10px] text-slate-600 font-medium"><div className="w-2.5 h-2.5 rounded bg-orange-100 border border-orange-300"></div> Story Strategy</div>
-          <div className="flex items-center gap-2 text-[10px] text-slate-600 font-medium"><div className="w-2.5 h-2.5 rounded bg-white ring-1 ring-blue-500"></div> Creative Asset</div>
+          <div className="flex items-center gap-2 text-[10px] text-slate-600 font-medium"><div className="w-2.5 h-2.5 rounded bg-rose-100 border border-rose-300"></div> Research Phase</div>
+          <div className="flex items-center gap-2 text-[10px] text-slate-600 font-medium"><div className="w-2.5 h-2.5 rounded bg-yellow-100 border border-yellow-300"></div> Strategic Concept</div>
+          <div className="flex items-center gap-2 text-[10px] text-slate-600 font-medium"><div className="w-2.5 h-2.5 rounded bg-cyan-100 border border-cyan-300"></div> Logic Structure</div>
+          <div className="flex items-center gap-2 text-[10px] text-slate-600 font-medium"><div className="w-2.5 h-2.5 rounded bg-indigo-100 border border-indigo-300"></div> Final Assembly</div>
       </div>
 
       {/* MINI MAP */}

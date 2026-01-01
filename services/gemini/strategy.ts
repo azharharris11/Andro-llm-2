@@ -340,7 +340,9 @@ export const generateAngles = async (
     project: ProjectContext, 
     personaName: string, 
     personaMotivation: string,
-    massDesire?: MassDesireOption // New Optional Input
+    massDesire?: MassDesireOption, // New Optional Input
+    mechanism?: MechanismOption, // Optional Input
+    story?: StoryOption // Optional Input
 ): Promise<GenResult<any[]>> => {
   const model = "gemini-3-flash-preview";
   const awareness = project.marketAwareness || MarketAwareness.PROBLEM_AWARE;
@@ -349,9 +351,25 @@ export const generateAngles = async (
   let contextInjection = `PERSONA: ${personaName}\nMOTIVATION: ${personaMotivation}`;
   
   if (massDesire) {
-      contextInjection = `
+      contextInjection += `
       CORE MASS DESIRE: ${massDesire.headline} (${massDesire.type})
       MARKET SYMPTOM: ${massDesire.marketSymptom}
+      `;
+  }
+  
+  if (mechanism) {
+      contextInjection += `
+      MECHANISM (LOGIC):
+      - UMP (Enemy): ${mechanism.ump}
+      - UMS (Solution): ${mechanism.ums}
+      `;
+  }
+  
+  if (story) {
+      contextInjection += `
+      STORY (EMOTION):
+      - Narrative: ${story.narrative}
+      - Theme: ${story.emotionalTheme}
       `;
   }
 

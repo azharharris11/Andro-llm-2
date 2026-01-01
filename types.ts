@@ -240,6 +240,7 @@ export interface NodeData {
   variableIsolated?: string; 
   congruenceRationale?: string; 
   validationStatus?: 'PENDING' | 'VALIDATED' | 'REJECTED'; // New: For Angle Validation
+  pathType?: 'LOGIC' | 'EMOTION' | 'OFFER'; // NEW: To visualize the "Lane" of the node
   
   inputTokens?: number;
   outputTokens?: number;

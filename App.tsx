@@ -398,11 +398,27 @@ const App: React.FC = () => {
 
       if (action === 'expand_angles') {
           handleUpdateNode(nodeId, { isLoading: true });
-          const personaName = node.title;
-          const personaMotivation = node.meta?.motivation || "General Public";
-          const massDesire = node.massDesireData;
           
-          const result = await GeminiService.generateAngles(project, personaName, personaMotivation, massDesire);
+          // INTELLIGENT CONTEXT GATHERING
+          const ancestry = getAncestryContext(nodeId);
+          
+          const personaName = ancestry.meta?.name || "General Audience";
+          const personaMotivation = ancestry.meta?.motivation || "General Motivation";
+          const massDesire = ancestry.massDesireData;
+          
+          // Determine if we are coming from Mechanism or Story
+          const mechanismData = node.mechanismData || ancestry.mechanismData;
+          const storyData = node.storyData || ancestry.storyData;
+          
+          const result = await GeminiService.generateAngles(
+              project, 
+              personaName, 
+              personaMotivation, 
+              massDesire,
+              mechanismData,
+              storyData
+          );
+          
           handleUpdateNode(nodeId, { isLoading: false });
           
           if (result.data) {
@@ -412,9 +428,13 @@ const App: React.FC = () => {
                       type: NodeType.ANGLE,
                       title: a.headline,
                       description: `${a.testingTier}: ${a.hook}`,
-                      meta: { ...node.meta, angle: a.hook, ...a },
+                      meta: { ...ancestry.meta, angle: a.hook, ...a },
                       testingTier: a.testingTier,
                       validationStatus: 'PENDING', 
+                      mechanismData: mechanismData, // Pass down logic
+                      storyData: storyData, // Pass down emotion
+                      bigIdeaData: ancestry.bigIdeaData, // Pass down concept
+                      massDesireData: ancestry.massDesireData, // Pass down desire
                       x: node.x + 400,
                       y: node.y + (i - 1) * 250,
                       parentId: nodeId
@@ -502,12 +522,13 @@ const App: React.FC = () => {
       const ancestry = getAncestryContext(pendingFormatParentId);
       const fullStrategyContext = {
           ...ancestry,
-          ...parentNode
+          ...parentNode // Merge parent (Angle) data directly
       };
 
       const formatsToGen = Array.from(selectedFormats) as CreativeFormat[];
       let verticalOffset = 0;
 
+      // Use the ANGLE (hook) from the Angle Node
       let angleToUse = parentNode.title;
       if (parentNode.type === NodeType.ANGLE && parentNode.meta?.hook) angleToUse = parentNode.meta.hook;
       else if (parentNode.type === NodeType.HOOK_NODE && parentNode.hookData) angleToUse = parentNode.hookData;
@@ -586,10 +607,10 @@ const App: React.FC = () => {
                        }, 
                        finalGenerationPrompt 
                    },
-                   storyData: ancestry.storyData,
-                   bigIdeaData: ancestry.bigIdeaData,
-                   mechanismData: ancestry.mechanismData,
-                   massDesireData: ancestry.massDesireData,
+                   storyData: parentNode.storyData || ancestry.storyData,
+                   bigIdeaData: parentNode.bigIdeaData || ancestry.bigIdeaData,
+                   mechanismData: parentNode.mechanismData || ancestry.mechanismData,
+                   massDesireData: parentNode.massDesireData || ancestry.massDesireData,
                    
                    x: parentNode.x + 450,
                    y: parentNode.y + verticalOffset,
