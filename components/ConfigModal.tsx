@@ -1,8 +1,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Globe, ImageIcon, Upload, X, Target, ChevronDown, ChevronUp, MessageSquare, Mic, Camera, Save, FolderOpen, Trash2, Zap, Settings, Sliders } from 'lucide-react';
+import { Globe, ImageIcon, Upload, X, Target, ChevronDown, ChevronUp, MessageSquare, Mic, Camera, Save, FolderOpen, Trash2, Zap, Settings, Sliders, Brain, Palette, Flame, Sparkles, Loader2 } from 'lucide-react';
 import { ProjectContext, MarketAwareness, FunnelStage, CopyFramework, LanguageRegister, StrategyMode } from '../types';
-import { analyzeImageContext, analyzeLandingPageContext } from '../services/geminiService';
+import { analyzeImageContext, analyzeLandingPageContext, recommendStrategy } from '../services/geminiService';
 import { scrapeLandingPage } from '../services/firecrawlService';
 
 // UI Component for Editable Dropdowns (Local to ConfigModal now)
@@ -65,6 +65,10 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, project, onU
     const [landingPageUrl, setLandingPageUrl] = useState('');
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
+    
+    // AI Recommendation State
+    const [isRecommending, setIsRecommending] = useState(false);
+    const [recommendedMode, setRecommendedMode] = useState<StrategyMode | null>(null);
     
     // Client Profiles State
     const [savedProfiles, setSavedProfiles] = useState<SavedProfile[]>([]);
@@ -165,6 +169,18 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, project, onU
         }
         setIsAnalyzing(false);
     };
+    
+    const handleRecommendStrategy = async () => {
+        if (!project.productDescription) {
+            alert("Please fill in the product description first.");
+            return;
+        }
+        setIsRecommending(true);
+        const mode = await recommendStrategy(project);
+        setRecommendedMode(mode);
+        onUpdateProject({ strategyMode: mode });
+        setIsRecommending(false);
+    };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -198,7 +214,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, project, onU
 
     return (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex overflow-hidden h-[85vh] ring-1 ring-slate-900/5">
+          <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl flex overflow-hidden h-[90vh] ring-1 ring-slate-900/5">
              
              {/* LEFT PANEL: CONTEXT IMPORT */}
              <div className="w-1/3 bg-slate-50 p-6 border-r border-slate-200 overflow-y-auto custom-scrollbar">
@@ -274,7 +290,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, project, onU
 
                 <div className="mb-8">
                     <h2 className="text-2xl font-display font-bold text-slate-900 mb-1">Project Brief</h2>
-                    <p className="text-sm text-slate-500">Fill in the essentials. AI will figure out the rest.</p>
+                    <p className="text-sm text-slate-500">Fill in the essentials. Pick a strategy. Let AI handle the execution.</p>
                 </div>
                 
                 {/* 1. ESSENTIALS (GROUPED) */}
@@ -294,24 +310,68 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, project, onU
                         </div>
                     </div>
 
-                    {/* STRATEGY SELECTOR (VISUAL) */}
-                    <div className="p-5 bg-indigo-50/50 rounded-xl border border-indigo-100">
-                        <label className="text-[10px] font-bold text-indigo-800 uppercase mb-3 block flex items-center gap-2"><Zap className="w-3.5 h-3.5 text-indigo-600"/> Select Strategy Mode</label>
-                        <div className="grid grid-cols-3 gap-3">
-                                {Object.values(StrategyMode).map((mode) => {
-                                    const isActive = project.strategyMode === mode;
-                                    const [title, desc] = mode.split(' - ');
-                                    return (
-                                        <button 
-                                        key={mode} 
-                                        onClick={() => onUpdateProject({ strategyMode: mode })}
-                                        className={`text-left p-3 rounded-xl border text-xs transition-all flex flex-col gap-1 relative overflow-hidden ${isActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-md ring-2 ring-indigo-200' : 'bg-white text-slate-600 border-indigo-100 hover:border-indigo-300'}`}
-                                        >
-                                            <span className="font-bold relative z-10">{title}</span>
-                                            <span className={`text-[10px] relative z-10 leading-tight ${isActive ? 'text-indigo-200' : 'text-slate-400'}`}>{desc}</span>
-                                        </button>
-                                    );
-                                })}
+                    {/* STRATEGY PLAYBOOK SELECTOR - 3 CARDS */}
+                    <div>
+                        <div className="flex items-center justify-between mb-3">
+                            <label className="text-[10px] font-bold text-indigo-800 uppercase flex items-center gap-2"><Target className="w-3.5 h-3.5 text-indigo-600"/> Pick Your Playbook</label>
+                            <button 
+                                onClick={handleRecommendStrategy} 
+                                disabled={isRecommending || !project.productDescription}
+                                className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-md border border-indigo-100 hover:bg-indigo-100 transition-colors flex items-center gap-1 disabled:opacity-50"
+                            >
+                                {isRecommending ? <Loader2 className="w-3 h-3 animate-spin"/> : <Sparkles className="w-3 h-3"/>}
+                                {isRecommending ? 'Analyzing...' : 'Ask AI for Strategy'}
+                            </button>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-4">
+                            {/* CARD 1: THE DOCTOR (LOGIC) */}
+                            <button 
+                                onClick={() => onUpdateProject({ strategyMode: StrategyMode.LOGIC })}
+                                className={`relative p-4 rounded-xl border text-left transition-all duration-300 flex flex-col gap-2 ${project.strategyMode === StrategyMode.LOGIC ? 'bg-white border-blue-500 ring-2 ring-blue-200 shadow-lg scale-[1.02]' : 'bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-500'}`}
+                            >
+                                {recommendedMode === StrategyMode.LOGIC && <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-bounce">AI RECOMMENDED</div>}
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${project.strategyMode === StrategyMode.LOGIC ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-400'}`}>
+                                    <Brain className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <div className="font-bold text-sm text-slate-900 mb-0.5">The Doctor</div>
+                                    <div className="text-[10px] opacity-80 leading-tight">Logic & Mechanism.</div>
+                                    <div className="mt-2 text-[9px] text-slate-400 leading-snug">Best for: Health, B2B, High-Ticket, Skeptical Markets.</div>
+                                </div>
+                            </button>
+
+                            {/* CARD 2: THE ARTIST (VISUAL) */}
+                            <button 
+                                onClick={() => onUpdateProject({ strategyMode: StrategyMode.VISUAL })}
+                                className={`relative p-4 rounded-xl border text-left transition-all duration-300 flex flex-col gap-2 ${project.strategyMode === StrategyMode.VISUAL ? 'bg-white border-pink-500 ring-2 ring-pink-200 shadow-lg scale-[1.02]' : 'bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-500'}`}
+                            >
+                                {recommendedMode === StrategyMode.VISUAL && <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-bounce">AI RECOMMENDED</div>}
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${project.strategyMode === StrategyMode.VISUAL ? 'bg-pink-100 text-pink-600' : 'bg-slate-200 text-slate-400'}`}>
+                                    <Palette className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <div className="font-bold text-sm text-slate-900 mb-0.5">The Artist</div>
+                                    <div className="text-[10px] opacity-80 leading-tight">Vibe & Aesthetic.</div>
+                                    <div className="mt-2 text-[9px] text-slate-400 leading-snug">Best for: Fashion, F&B, Home Decor, Impulse Buys.</div>
+                                </div>
+                            </button>
+
+                            {/* CARD 3: THE MERCHANT (OFFER) */}
+                            <button 
+                                onClick={() => onUpdateProject({ strategyMode: StrategyMode.OFFER })}
+                                className={`relative p-4 rounded-xl border text-left transition-all duration-300 flex flex-col gap-2 ${project.strategyMode === StrategyMode.OFFER ? 'bg-white border-amber-500 ring-2 ring-amber-200 shadow-lg scale-[1.02]' : 'bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-500'}`}
+                            >
+                                {recommendedMode === StrategyMode.OFFER && <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-bounce">AI RECOMMENDED</div>}
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${project.strategyMode === StrategyMode.OFFER ? 'bg-amber-100 text-amber-600' : 'bg-slate-200 text-slate-400'}`}>
+                                    <Flame className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <div className="font-bold text-sm text-slate-900 mb-0.5">The Merchant</div>
+                                    <div className="text-[10px] opacity-80 leading-tight">Hard Offer & Promo.</div>
+                                    <div className="mt-2 text-[9px] text-slate-400 leading-snug">Best for: Flash Sales, Commodities, Dropshipping.</div>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </div>

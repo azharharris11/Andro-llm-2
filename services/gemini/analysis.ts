@@ -1,6 +1,6 @@
 
 import { Type } from "@google/genai";
-import { ProjectContext, NodeData, PredictionMetrics, GenResult, AdCopy, LanguageRegister, MarketAwareness, FunnelStage } from "../../types";
+import { ProjectContext, NodeData, PredictionMetrics, GenResult, AdCopy, LanguageRegister, MarketAwareness, FunnelStage, StrategyMode } from "../../types";
 import { ai, extractJSON } from "./client";
 
 export const checkAdCompliance = async (adCopy: AdCopy): Promise<string> => {
@@ -109,6 +109,48 @@ export const predictCreativePerformance = async (
             inputTokens: 0, 
             outputTokens: 0 
         };
+    }
+};
+
+export const recommendStrategy = async (project: ProjectContext): Promise<StrategyMode> => {
+    const model = "gemini-3-flash-preview";
+    const prompt = `
+        ROLE: Marketing Strategist.
+        TASK: Determine the single best Strategy Playbook for this product.
+        
+        PRODUCT: ${project.productName}
+        DESCRIPTION: ${project.productDescription}
+        AUDIENCE: ${project.targetAudience}
+        
+        OPTIONS:
+        1. LOGIC (The Doctor): High trust, high price, health, B2B, or complex problem-solving. Needs mechanism and proof.
+        2. VISUAL (The Artist): Lifestyle, fashion, food, low risk, impulse buy. Needs aesthetics and vibe.
+        3. OFFER (The Merchant): Commodity, dropshipping, flash sale, discount-heavy. Needs scarcity.
+        
+        OUTPUT JSON:
+        { "mode": "LOGIC" | "VISUAL" | "OFFER" }
+    `;
+    
+    try {
+        const response = await ai.models.generateContent({
+            model,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: { mode: { type: Type.STRING } }
+                }
+            }
+        });
+        const data = extractJSON<{mode: string}>(response.text || "{}");
+        // Validate
+        if (["LOGIC", "VISUAL", "OFFER"].includes(data.mode)) {
+            return data.mode as StrategyMode;
+        }
+        return StrategyMode.LOGIC;
+    } catch (e) {
+        return StrategyMode.LOGIC;
     }
 };
 

@@ -135,7 +135,7 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
         fullStoryContext 
     } = ctx;
 
-    const isHardSell = project.strategyMode === StrategyMode.HARD_SELL;
+    const isOfferHeavy = project.strategyMode === StrategyMode.OFFER;
     const marketAwareness = project.marketAwareness || MarketAwareness.PROBLEM_AWARE;
 
     // LEVEL 2: AWARENESS MAPPING LOGIC
@@ -153,8 +153,8 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     let styleInstruction = "Style: Professional Ad.";
     if (isNativeStory) {
         styleInstruction = "Style: AMATEUR UGC. No professional lighting. Camera shake/grain allowed. Looks like a friend sent it. 'Authenticity Bias'.";
-    } else if (isHardSell) {
-        styleInstruction = "Style: HARD HITTING DIRECT RESPONSE. High contrast, grit, and urgency.";
+    } else if (isOfferHeavy) {
+        styleInstruction = "Style: HARD HITTING PROMOTIONAL. High contrast, focus on the deal/badge/text.";
     }
 
     const strategicContext = {

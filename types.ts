@@ -112,9 +112,9 @@ export enum LanguageRegister {
 }
 
 export enum StrategyMode {
-  DIRECT_RESPONSE = 'Deep Dive (Scientific/Story) - Best for Health/Biz',
-  VISUAL_IMPULSE = 'Visual/Impulse (Vibe/Aesthetic) - Best for Fashion/F&B',
-  HARD_SELL = 'Hard Sell (Promo/Event) - Best for Flash Sale'
+  LOGIC = 'LOGIC',   // The Doctor (Scientific, Mechanism, Trust)
+  VISUAL = 'VISUAL', // The Artist (Aesthetic, Vibe, Impulse)
+  OFFER = 'OFFER'    // The Merchant (Promo, Scarcity, Deal)
 }
 
 export enum HumanDesire {

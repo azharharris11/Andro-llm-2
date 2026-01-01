@@ -28,7 +28,7 @@ const initialProject: ProjectContext = {
   funnelStage: FunnelStage.TOF,
   languageRegister: LanguageRegister.CASUAL,
   imageModel: 'standard', // Default
-  strategyMode: StrategyMode.VISUAL_IMPULSE // Changed default to Visual Impulse for safer start
+  strategyMode: StrategyMode.LOGIC // Changed default to Logic based on new structure
 };
 
 const initialNodes: NodeData[] = [

@@ -109,7 +109,7 @@ export const generateCreativeStrategy = async (
   isHVCOFlow: boolean = false
 ): Promise<GenResult<CreativeStrategyResult>> => {
   const model = "gemini-3-flash-preview";
-  const strategyMode = project.strategyMode || StrategyMode.DIRECT_RESPONSE;
+  const strategyMode = project.strategyMode || StrategyMode.LOGIC;
   const country = project.targetCountry || "Indonesia";
   const register = project.languageRegister || LanguageRegister.CASUAL;
   
@@ -122,26 +122,27 @@ export const generateCreativeStrategy = async (
 
   // DYNAMIC STRATEGY DIRECTION
   let strategyInstruction = "";
-  if (strategyMode === StrategyMode.HARD_SELL) {
+  if (strategyMode === StrategyMode.OFFER) {
       strategyInstruction = `
         **PRIORITY: CONVERSION & OFFER (HARD SELL)**
-        - Visual: "Hero Shot" or "Product in Action". High clarity.
+        - Visual: "Hero Shot" or "Product in Action". High clarity. Focus on the deal/scarcity.
         - Embedded Text: Urgent, scarcity-driven (e.g. "50% OFF", "Last Chance", "Restocked").
-        - Copy Tone: Urgent, direct, promotional.
+        - Copy Tone: Urgent, direct, promotional. Skip the fluff.
       `;
-  } else if (strategyMode === StrategyMode.VISUAL_IMPULSE) {
+  } else if (strategyMode === StrategyMode.VISUAL) {
       strategyInstruction = `
         **PRIORITY: AESTHETIC & DESIRE (VISUAL IMPULSE)**
-        - Visual: Aspirational, Pinterest-style, lifestyle focus.
+        - Visual: Aspirational, Pinterest-style, lifestyle focus. Make it beautiful.
         - Embedded Text: Minimalist (1-3 words max) or NO text if better.
-        - Copy Tone: Minimalist, "cool", identity-driven.
+        - Copy Tone: Minimalist, "cool", identity-driven. No scientific jargon.
       `;
   } else {
+      // LOGIC (Default/Doctor)
       strategyInstruction = `
-        **PRIORITY: PATTERN INTERRUPT (DIRECT RESPONSE)**
-        - Visual: Start with the PROBLEM/PAIN or a "Mechanism X-Ray".
+        **PRIORITY: PATTERN INTERRUPT & MECHANISM (THE DOCTOR)**
+        - Visual: Start with the PROBLEM/PAIN or a "Mechanism X-Ray". Proof over beauty.
         - Embedded Text: The "Hook" or "Question" that stops the scroll.
-        - Copy Tone: Empathetic, raw, "Stop the scroll" energy.
+        - Copy Tone: Empathetic, raw, educational. Explain WHY it works.
       `;
   }
 

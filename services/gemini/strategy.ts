@@ -270,10 +270,10 @@ export const generateHooks = async (
   story: StoryOption
 ): Promise<GenResult<string[]>> => {
   const model = "gemini-3-flash-preview";
-  const strategyMode = project.strategyMode || StrategyMode.DIRECT_RESPONSE;
+  const strategyMode = project.strategyMode || StrategyMode.LOGIC;
   const langInstruction = getLanguageInstruction(project.targetCountry || "Indonesia", project.languageRegister || LanguageRegister.CASUAL);
   
-  const canRevealProduct = strategyMode === StrategyMode.HARD_SELL;
+  const canRevealProduct = strategyMode === StrategyMode.OFFER;
   const awareness = project.marketAwareness || MarketAwareness.PROBLEM_AWARE;
 
   let hookInstruction = "";
