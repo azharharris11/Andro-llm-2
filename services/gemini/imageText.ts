@@ -157,6 +157,11 @@ export const getFormatTextGuide = (format: CreativeFormat): string => {
             Subhead: One sentence explaining the "Why".
             Example: "Stop Drinking Coffee." (Head) + "Here is what to use instead for energy." (Sub)`;
             
+        case CreativeFormat.CAROUSEL_PHOTO_DUMP:
+            return `${baseGuide} CAPTION STICKER.
+            Text: A short date or emotion (e.g., "March 1st.", "Feeling this.", "Mood").
+            Style: Instagram Stories font with background.`;
+
         case CreativeFormat.PRESS_FEATURE:
             return `${baseGuide} EDITORIAL HEADLINE.
             Format: Magazine Title.
@@ -169,8 +174,15 @@ export const getFormatTextGuide = (format: CreativeFormat): string => {
             Item 2: [Problem] (Crossed out).
             Item 3: [Product Name] (Checkmarked with thick green ink).`;
 
+        // --- DEFAULTS ---
+        case CreativeFormat.AESTHETIC_MINIMAL:
+            // OVERRIDDEN: No more editorial style.
+            return `${baseGuide} NATIVE OVERLAY.
+            Format: Minimalist sans-serif text placed in a 'white space' area of the photo.
+            Style: Looks like a default phone photo editor font.`;
+
         default:
-            return `${baseGuide} STANDARD AD COPY. Punchy headline (max 7 words). Clear Value Proposition. High contrast against background.`;
+            return `${baseGuide} NATIVE OVERLAY. Short, punchy, looks like user-generated text.`;
     }
 };
 
@@ -199,10 +211,21 @@ export const generateVisualText = async (
     const formatGuide = getFormatTextGuide(format);
 
     const prompt = `
-        # ROLE: Expert Direct Response Copywriter (Meta Andromeda Specialist)
+        # ROLE: Expert Direct Response Copywriter (Native Ads Specialist)
         ${langInstruction}
         
-        TASK: Transform the Marketing Hook into a visual text string.
+        TASK: Transform the Marketing Hook into a visual text string for a NATIVE AD.
+        
+        # NATIVE AD FORMULA:
+        1. KEYWORD: Use terms relevant to the audience's specific problem.
+        2. EMOTION: Focus on the "vulnerable/venting" (curhat) tone.
+        3. OUTCOME: Emphasize the transformation, not the features.
+        
+        # PRINCIPLE: 
+        - "Thoughtful but Not Pretty".
+        - Avoid formal marketing dictionary.
+        - Use "I/Me/Aku" perspective (Authenticity Bias).
+        
         ORIGINAL HOOK: "${cleanAngle}"
         
         ${formatGuide}

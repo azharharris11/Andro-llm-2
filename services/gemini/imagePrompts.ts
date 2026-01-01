@@ -17,7 +17,8 @@ const getAwarenessVisualLogic = (awareness: MarketAwareness): string => {
             return "SOLUTION AWARE STAGE: Focus on the MECHANISM. Show 'Us vs Them', a diagram, an X-Ray of the effect, or a unique ingredient. Show WHY the old way failed and this new way works.";
         case MarketAwareness.PRODUCT_AWARE:
         case MarketAwareness.MOST_AWARE:
-            return "MOST AWARE STAGE: HERO SHOT & MAFIA OFFER. Show the product looking majestic with a 'Value Stack' visualization (e.g., product + bonuses + guarantee badge). High contrast, professional, 'Ready to Ship' vibe. Focus on the OFFER and SCARCITY.";
+            // REVISED FOR NATIVE/UGLY AD STRATEGY
+            return "MOST AWARE STAGE: NATIVE OFFER. Show the product in a messy, real-life setting (e.g., on a cluttered desk, held by a shaky hand, or in a cardboard box). Overlay a 'Mafia Offer' using a native-looking sticker or Apple Notes screenshot. NO studio lighting. Make it look like a 'Found Deal'.";
         default:
             return "General Direct Response Visual.";
     }
@@ -116,7 +117,9 @@ const getFormatVisualGuide = (format: CreativeFormat): string => {
 
         // --- DEFAULTS ---
         case CreativeFormat.AESTHETIC_MINIMAL:
-            return "Style: High-end editorial (Beige/Cream tones). Serif fonts, plenty of white space. Aspirational and premium.";
+            // REPLACED EDITORIAL WITH RAW MINIMALIST
+            return "Style: RAW MINIMALISM. Uncurated, flash photography against a plain wall. Hard shadows. Looks like an eBay listing photo or a quick snap sent to a friend. No filters.";
+
         case CreativeFormat.UGC_MIRROR:
             return "Style: Raw mirror selfie. Flash photography, messy room background. 100% authentic human connection.";
         case CreativeFormat.CHECKLIST_TODO:
@@ -146,20 +149,25 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     const massDesire = fullStoryContext?.massDesire;
     const desireType = massDesire?.type || "General";
     
-    // Baseline Style Override for Native Formats
-    const isNativeStory = [
-        CreativeFormat.IG_STORY_TEXT, 
-        CreativeFormat.PHONE_NOTES, 
-        CreativeFormat.LONG_TEXT,
-        CreativeFormat.UGC_MIRROR
-    ].includes(format);
+    // DEFINE DEFAULT MOOD BASED ON DESIRE TYPE
+    let psychologicalMood = "MOOD: Natural, balanced daylight. Trustworthy and clear.";
+    
+    if (desireType.includes("Survival") || desireType.includes("Pain") || desireType.includes("Fear")) {
+        psychologicalMood = "MOOD: Dark, shadowy, high contrast (Chiaroscuro). A sense of urgency and danger. Cold tones (Blue/Grey/Green).";
+    } else if (desireType.includes("Food") || desireType.includes("Comfort") || desireType.includes("Enjoyment")) {
+        psychologicalMood = "MOOD: Warm, cozy, soft lighting. Golden hour. Comforting textures (wood, fabric). Inviting.";
+    } else if (desireType.includes("Sexual") || desireType.includes("Superiority") || desireType.includes("Status")) {
+        psychologicalMood = "MOOD: High-key, aspirational, glamour lighting. Sharp focus. Luxurious vibe. Purple/Gold accents.";
+    } else if (desireType.includes("Care") || desireType.includes("Loved Ones")) {
+        psychologicalMood = "MOOD: Soft, ethereal, airy. High exposure. Pastoral or domestic warmth.";
+    }
 
-    let styleInstruction = "Style: Professional Ad.";
-    if (isNativeStory) {
-        styleInstruction = "Style: AMATEUR UGC. No professional lighting. Camera shake/grain allowed. Looks like a friend sent it. 'Authenticity Bias'.";
-        psychologicalMood = "MOOD: Raw, Unfiltered, Phone Flash. Real life."; // Override mood for UGC
-    } else if (isOfferHeavy) {
-        styleInstruction = "Style: HARD HITTING PROMOTIONAL. High contrast, focus on the deal/badge/text.";
+    // MANDATORY NATIVE/UGLY STYLE OVERRIDE
+    // We ignore previous conditional logic and force the Amateur aesthetic.
+    let styleInstruction = "Style: AMATEUR UGC & UGLY AD AESTHETIC. No professional lighting. Low-res feel, non-matching fonts, 'Authenticity Bias'. Must look like a regular post, NOT a brand advertisement. Avoid smooth, generic AI lighting.";
+    
+    if (isOfferHeavy) {
+        styleInstruction = "Style: HARD HITTING NATIVE. Focus on massive contrast and raw UI elements (Stickers, Red Arrows). Use 'Ugly' design principles to break banner blindness.";
     }
 
     const strategicContext = {
@@ -196,8 +204,15 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     };
 
     const systemPrompt = `
-    ROLE: Senior AI Prompt Engineer & Creative Director.
-    TASK: Translate a Creative Concept into a single, high-conversion Image Generation Prompt.
+    ROLE: Senior AI Prompt Engineer & Creative Director (Specializing in Native/Ugly Ads).
+    TASK: Create a single Image Generation Prompt that bypasses "Banner Blindness".
+
+    --- NATIVE AD BLUEPRINT ---
+    1. PATTERN INTERRUPT: The image must look "wrong" or "out of place" in a professional feed. Use clashing colors or MS Paint-style elements if necessary.
+    2. UX FAMILIARITY BIAS: Emulate UI from ${format} (Twitter, Gmail, WhatsApp, or Notes) perfectly.
+    3. THOUGHTFUL BUT NOT PRETTY: Prioritize the psychological message over aesthetic beauty. No stock photo look.
+    4. NO BRANDING: Do not use rigid brand colors or corporate layouts. 
+    5. AUTHENTICITY: Make it look like a "friend's post" or a "leaked screenshot".
 
     --- STRATEGIC CONTEXT ---
     ${JSON.stringify(strategicContext, null, 2)}
@@ -206,7 +221,7 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     1. CORE COMPOSITION: Execute the scene "${visualScene}" precisely. 
     2. VISUAL DNA: Strictly follow the style "${visualStyle}" and format rule: "${getFormatVisualGuide(format)}".
     3. MARKET AWARENESS RULE: ${awarenessLogic} (This is CRITICAL - Do not show product if UNAWARE).
-    4. NO STOCK LOOK: ${styleInstruction}. Avoid smooth, generic AI lighting. Make it "Thoughtful but not pretty".
+    4. NO STOCK LOOK: ${styleInstruction}. Make it "Thoughtful but not pretty".
     5. TEXT RENDERING: The image MUST include the text "${embeddedText}" clearly visible in the scene (e.g., on the screen, sign, or overlay).
     6. CONGRUENCE: The visual must prove the text. "${congruenceRationale || 'Visual evidence of the claim'}".
     7. PSYCHOLOGICAL MOOD: The lighting and vibe must reflect the "${desireType}". ${psychologicalMood}.

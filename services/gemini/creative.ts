@@ -155,53 +155,29 @@ export const generateCreativeStrategy = async (
       `;
   }
 
-  // DYNAMIC STRATEGY DIRECTION
-  let strategyInstruction = "";
-  
-  // ANDROMEDA LOGIC: Native Ads should NEVER look like ads.
-  const isNative = [CreativeFormat.IG_STORY_TEXT, CreativeFormat.PHONE_NOTES, CreativeFormat.UGLY_VISUAL].includes(format);
-  
-  if (strategyMode === StrategyMode.OFFER) {
-      strategyInstruction = `
-        **PRIORITY: CONVERSION & OFFER (HARD SELL)**
-        - Visual: "Hero Shot" or "Product in Action". High clarity. Focus on the deal/scarcity.
-        - Embedded Text: Urgent, scarcity-driven (e.g. "50% OFF", "Last Chance", "Restocked").
-        - Copy Tone: Urgent, direct, promotional. Skip the fluff.
-      `;
-  } else if (strategyMode === StrategyMode.VISUAL) {
-      strategyInstruction = `
-        **PRIORITY: AESTHETIC & DESIRE (VISUAL IMPULSE)**
-        - Visual: Aspirational, Pinterest-style, lifestyle focus. Make it beautiful.
-        - Embedded Text: Minimalist (1-3 words max) or NO text if better.
-        - Copy Tone: Minimalist, "cool", identity-driven. No scientific jargon.
-      `;
-  } else {
-      // LOGIC (Default/Doctor)
-      strategyInstruction = `
-        **PRIORITY: PATTERN INTERRUPT & MECHANISM (THE DOCTOR)**
-        - Visual: Start with the PROBLEM/PAIN or a "Mechanism X-Ray". Proof over beauty.
-        - Embedded Text: The "Hook" or "Question" that stops the scroll.
-        - Copy Tone: Empathetic, raw, educational. Explain WHY it works.
-      `;
-  }
-  
-  if (isNative) {
-      strategyInstruction += `
-      ** ANDROMEDA RULE: NATIVE/UGLY MODE **
-      - This must look AMATEUR. Do not make it polished.
-      - Use "Twitter Speak" or "Notes App" style.
-      - Visuals should look like they were taken with a shaky phone.
-      `;
-  }
+  // FORCE NATIVE/UGLY MODE (Andromeda Standard)
+  const strategyInstruction = `
+    **MANDATORY NATIVE RULE (Andromeda Standard):**
+    - DO NOT make this look like a professional ad. It must look like an organic user post.
+    - VISUAL: "Thoughtful but Not Pretty". Use amateur aesthetics, low-res vibes, or screenshots (Notes App, WhatsApp, Reddit).
+    - PATTERN INTERRUPT: Use "strange visuals" or "visual anomalies" to stop the scroll.
+    - NO BRANDING: No polished logos or brand colors. Use system fonts (Arial, Helvetica, San Francisco).
+    - PLATFORM UI: Mimic the UX of the platform (Twitter thread, Gmail inbox, iPhone notification) perfectly.
+  `;
 
   // USE THE SOURCE OF TRUTH FOR FORMAT INSTRUCTIONS
   const formatInstruction = getFormatTextGuide(format);
 
   const prompt = `
-    # ROLE: World-Class Creative Strategist (Meta & TikTok Ads)
+    # ROLE: World-Class native Ad Specialist (Native Advertising Expert)
+
+    TASK: Design a Creative Asset that is "Invisible" (cannot be detected as an ad by the brain's filter).
+
+    **PRINCIPLES:**
+    1. **Authenticity Bias:** People trust raw content more than polished studios.
+    2. **Banner Blindness:** Professional ads get ignored. Native ads get read.
 
     **CONTEXT:**
-    Strategy Mode: ${strategyMode}
     Format: ${format}
     Target Country: ${country} (Native Language for Copy & Embedded Text)
     Language Register: ${register}
@@ -220,10 +196,6 @@ export const generateCreativeStrategy = async (
     
     ${keywordInstruction}
 
-    **THE 80/20 RULE (CRITICAL):**
-    - **80% MESSAGING:** The primary goal is to communicate the ANGLE ("${angle}"). The visual is just a vehicle for this message.
-    - **20% CONCEPT:** The format (${format}) is just the wrapper. Don't let the "art" distract from the "offer".
-    
     **STRATEGIC GUIDELINES:**
     ${strategyInstruction}
     ${formatInstruction}
@@ -238,6 +210,13 @@ export const generateCreativeStrategy = async (
     - The *Embedded Text* and *Visual Scene* must work together to create "Congruence" (The image proves the text).
     - **PSYCHOLOGICAL ALIGNMENT:** The tone must match the Core Desire (${massDesire?.type || "General"}). If it's Fear, be urgent. If it's Status, be aspirational.
     
+    **native AD FORMULA (MANDATORY):**
+    You MUST fill the 'uglyAdStructure' object with:
+    - keyword: The specific tribe keyword used.
+    - emotion: The raw emotion being triggered.
+    - qualifier: Who specifically is this ad for?
+    - outcome: The transformation promised.
+
     **OUTPUT JSON:**
     - visualScene: Specific action/setup for the image generator.
     - visualStyle: Camera type, lighting, mood.
@@ -247,7 +226,7 @@ export const generateCreativeStrategy = async (
     - cta: Button text (e.g. Shop Now).
     - rationale: Why this combination hooks the persona.
     - congruenceRationale: How the image visually proves the text claim.
-    - uglyAdStructure: { keyword, emotion, qualifier, outcome } (MANDATORY for Ugly Ads, else empty strings).
+    - uglyAdStructure: { keyword, emotion, qualifier, outcome } (MANDATORY).
   `;
 
   try {
