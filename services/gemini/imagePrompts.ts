@@ -142,6 +142,24 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     // We override general visual directives with specific awareness-level instructions.
     const awarenessLogic = getAwarenessVisualLogic(marketAwareness);
 
+    // LEVEL 3: PSYCHOLOGICAL MOOD (MASS DESIRE MAPPING)
+    const massDesire = fullStoryContext?.massDesire;
+    const desireType = massDesire?.type || "General";
+    
+    // Map Life Force 8 to Lighting/Mood
+    let psychologicalMood = "Lighting: Natural, authentic.";
+    const desireLower = desireType.toLowerCase();
+
+    if (desireLower.includes("pain") || desireLower.includes("survival") || desireLower.includes("fear")) {
+        psychologicalMood = "MOOD: High Contrast, Moody, Dramatic Shadows. The lighting should evoke a sense of urgency or problem awareness. slightly desaturated.";
+    } else if (desireLower.includes("status") || desireLower.includes("superiority") || desireLower.includes("winning")) {
+        psychologicalMood = "MOOD: High Key, Bright, Golden Hour, Spotlight. The lighting should evoke aspiration, premium quality, and success. Rich colors.";
+    } else if (desireLower.includes("food") || desireLower.includes("comfort")) {
+        psychologicalMood = "MOOD: Warm, Soft, Cozy, Interior lighting. The lighting should evoke safety and satisfaction. Warm color temperature.";
+    } else if (desireLower.includes("sex") || desireLower.includes("social")) {
+        psychologicalMood = "MOOD: Vibrant, Dynamic, Party or Intimate lighting. Focus on human connection and energy.";
+    }
+
     // Baseline Style Override for Native Formats
     const isNativeStory = [
         CreativeFormat.IG_STORY_TEXT, 
@@ -153,6 +171,7 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     let styleInstruction = "Style: Professional Ad.";
     if (isNativeStory) {
         styleInstruction = "Style: AMATEUR UGC. No professional lighting. Camera shake/grain allowed. Looks like a friend sent it. 'Authenticity Bias'.";
+        psychologicalMood = "MOOD: Raw, Unfiltered, Phone Flash. Real life."; // Override mood for UGC
     } else if (isOfferHeavy) {
         styleInstruction = "Style: HARD HITTING PROMOTIONAL. High contrast, focus on the deal/badge/text.";
     }
@@ -163,6 +182,11 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
             brandVoice: project.brandVoice || "Adaptable",
             // Menambahkan mekanisme agar visual selaras dengan logika solusi
             mechanismUMS: fullStoryContext?.mechanism?.ums 
+        },
+        psychology: {
+            coreDrive: desireType,
+            deepestDesire: massDesire?.headline || "General Desire",
+            lightingDirective: psychologicalMood
         },
         persona: {
             identity: rawPersona?.profile || "General Audience",
@@ -199,6 +223,7 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     4. NO STOCK LOOK: ${styleInstruction}. Avoid smooth, generic AI lighting. Make it "Thoughtful but not pretty".
     5. TEXT RENDERING: The image MUST include the text "${embeddedText}" clearly visible in the scene (e.g., on the screen, sign, or overlay).
     6. CONGRUENCE: The visual must prove the text. "${congruenceRationale || 'Visual evidence of the claim'}".
+    7. PSYCHOLOGICAL MOOD: The lighting and vibe must reflect the "${desireType}". ${psychologicalMood}.
     
     --- TECHNICAL PARAMETERS ---
     - Style Enhancer: ${enhancer}

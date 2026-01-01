@@ -68,10 +68,12 @@ export const generateCreativeImage = async (
   const safety = getSafetyGuidelines(isUglyFormat);
   const moodPrompt = `Lighting: ${visualStyle || "Natural, Authentic"}. Mood: High conversion direct response.`;
 
+  // FIX: Include Mass Desire in the full story context for the Prompt Engineer
   const fullStoryContext = {
       story: persona.storyData,
       mechanism: persona.mechanismData,
-      bigIdea: persona.bigIdeaData
+      bigIdea: persona.bigIdeaData,
+      massDesire: persona.massDesireData // CRITICAL FIX: Passed for psychological mood lighting
   };
 
   // 4. PACK FULL CONTEXT

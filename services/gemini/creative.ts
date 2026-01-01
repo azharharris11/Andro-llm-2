@@ -134,10 +134,9 @@ export const generateCreativeStrategy = async (
   const mech = fullStrategyContext?.mechanismData;
   const bigIdea = fullStrategyContext?.bigIdeaData;
   const story = fullStrategyContext?.storyData;
+  const massDesire = fullStrategyContext?.massDesireData; // FIX: Extract Mass Desire
   
   // CONTEXT AGGREGATION: COLISEUM KEYWORDS (The Secret Sauce)
-  // Check if keywords exist in persona meta or context, otherwise fallback to empty.
-  // We explicitly look in 'meta' which usually holds the raw persona object from generatePersonas
   const coliseumKeywords = persona.meta?.coliseumKeywords || persona.coliseumKeywords || [];
   let keywordInstruction = "";
   
@@ -215,6 +214,7 @@ export const generateCreativeStrategy = async (
     **PERSONA DATA (RESEARCH CONTEXT):**
     Who: ${persona.name || "Target User"}
     Symptoms: ${personaPain}
+    ${massDesire ? `CORE DESIRE (Life Force 8): "${massDesire.headline}" (${massDesire.type})` : ''} 
     ${story ? `Narrative Context: ${story.narrative}` : ''}
     ${bigIdea ? `Big Idea Shift: ${bigIdea.concept}` : ''}
     
@@ -236,6 +236,7 @@ export const generateCreativeStrategy = async (
 
     **CRITICAL:** 
     - The *Embedded Text* and *Visual Scene* must work together to create "Congruence" (The image proves the text).
+    - **PSYCHOLOGICAL ALIGNMENT:** The tone must match the Core Desire (${massDesire?.type || "General"}). If it's Fear, be urgent. If it's Status, be aspirational.
     
     **OUTPUT JSON:**
     - visualScene: Specific action/setup for the image generator.
