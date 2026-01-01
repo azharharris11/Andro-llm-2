@@ -10,125 +10,140 @@ import { PromptContext } from "./imageUtils";
 const getAwarenessVisualLogic = (awareness: MarketAwareness): string => {
     switch (awareness) {
         case MarketAwareness.UNAWARE:
-            return "UNAWARE STAGE (CRITICAL): DO NOT SHOW THE PRODUCT PACKAGING. I repeat: NO PRODUCT. The user doesn't know it exists. Focus 100% on a 'Visual Metaphor' (e.g., a melting clock for lost time), an 'Anomaly' (something that looks 'wrong' or 'glitched'), or a shocking specific symptom. The goal is purely CURIOSITY and PATTERN INTERRUPT.";
+            /**
+             * STRATEGI: Largest & Least Competitive Audience[cite: 61, 62].
+             * VISUAL: 100% CURIOSITY. Dilarang keras menampilkan produk[cite: 73, 79].
+             * Gunakan "Curiosity Image" atau "Anomaly" yang memicu emosi (sedih, penasaran, jijik)[cite: 73, 74].
+             * Contoh: Foto kucing sedih (untuk produk kesehatan kucing) atau tekstur aneh yang dilingkari merah[cite: 74, 240].
+             */
+            return "UNAWARE STAGE: NO PRODUCT. Fokus pada 'Curiosity Gap'. Visual harus memicu respon emosional instan tanpa terlihat seperti jualan[cite: 73, 85]. Gunakan 'Pattern Interrupt' yang terlihat seperti postingan organik teman[cite: 135].";
+
         case MarketAwareness.PROBLEM_AWARE:
-            return "PROBLEM AWARE STAGE: Focus on the SYMPTOM. Show the 'Visceral Pain'. A close-up of the body part hurting, or the messy room, or the frustration. Emphasize the 'Before' state. Product can appear subtly as a saviour, but pain is the hero.";
+            /**
+             * STRATEGI: Symptom-Led[cite: 22].
+             * VISUAL: Tunjukkan masalah secara "Ugly" dan visceral[cite: 31, 32].
+             * Fokus pada 'Visceral Pain' seperti jerawat parah, barang berantakan, atau gejala fisik[cite: 32].
+             * Menggunakan "Ugly Visual" untuk membuktikan klaim secara jujur[cite: 31].
+             */
+            return "PROBLEM AWARE: Fokus pada GEJALA/SYMPTOM[cite: 22]. Visual harus 'Ugly' dan nyata (misal: close-up masalah kulit atau kekacauan rumah)[cite: 32, 247]. Manfaatkan 'Authenticity Bias'[cite: 5].";
+
         case MarketAwareness.SOLUTION_AWARE:
-            return "SOLUTION AWARE STAGE: Focus on the MECHANISM. Show 'Us vs Them', a diagram, an X-Ray of the effect, or a unique ingredient. Show WHY the old way failed and this new way works.";
+            /**
+             * STRATEGI: Unique Mechanism[cite: 107].
+             * VISUAL: Tunjukkan "Mengapa" cara lama gagal dan cara baru ini bekerja[cite: 107].
+             * Gunakan format perbandingan atau diagram sederhana (Whiteboard style)[cite: 39].
+             */
+            return "SOLUTION AWARE: Tampilkan 'Unique Mechanism'[cite: 107]. Gunakan visual yang menjelaskan proses solusi, seperti 'X-Ray' atau perbandingan 'Us vs Them' yang kontras[cite: 200].";
+
         case MarketAwareness.PRODUCT_AWARE:
         case MarketAwareness.MOST_AWARE:
-            // REVISED FOR NATIVE/UGLY AD STRATEGY
-            return "MOST AWARE STAGE: NATIVE OFFER. Show the product in a messy, real-life setting (e.g., on a cluttered desk, held by a shaky hand, or in a cardboard box). Overlay a 'Mafia Offer' using a native-looking sticker or Apple Notes screenshot. NO studio lighting. Make it look like a 'Found Deal'.";
+            /**
+             * STRATEGI: Direct Offer with Context[cite: 56, 131].
+             * VISUAL: Produk tampil jelas namun tetap dalam setting 'Amateur/Native'[cite: 129, 135].
+             * Berikan konteks pada penawaran (misal: "Early Halloween Sale") agar terlihat masuk akal[cite: 130].
+             */
+            return "MOST AWARE: NATIVE OFFER. Tampilkan produk dengan pencahayaan amatir (iPhone style)[cite: 135]. Gunakan overlay teks besar yang menonjolkan diskon atau urgensi dengan alasan logis[cite: 130, 155].";
+
         default:
-            return "General Direct Response Visual.";
+            return "General Native Response Visual.";
     }
 };
-
 const getFormatVisualGuide = (format: CreativeFormat): string => {
     switch (format) {
-        // --- NATIVE / SOCIAL (UX FAMILIARITY BIAS) ---
-        
-        case CreativeFormat.IG_STORY_TEXT:
-            return "Style: NATIVE IG STORY TEXT STACK. Vertical 9:16. The background is a blurry/dimmed lifestyle photo (candid). FOREGROUND: Multiple distinct text bubbles (White background blocks with Black text) stacked vertically in the center. The text is long, narrative, and tells a story. Look like a real user 'curhat' (venting) session.";
-            
-        case CreativeFormat.PHONE_NOTES:
-            return "Style: APPLE NOTES UI REALISM. The image must look EXACTLY like a screenshot of the iPhone Notes app. Paper texture background (off-white or yellow). Top UI bar visible ('< Notes' and 'Share' icon). The text is typed in the default San Francisco font. Add some hand-drawn red circles or underlines for emphasis.";
-            
-        case CreativeFormat.TWITTER_REPOST:
-            return "Style: X/TWITTER POST SCREENSHOT. Sharp, high-res UI. White or Dark mode background. Must include: Circular Profile Picture, Username, Handle (@name), The Tweet Body Text, and the bottom action bar (Reply, Retweet, Like, Share icons). Make it look embedded in a feed.";
-            
-        case CreativeFormat.HANDHELD_TWEET:
-             return "Style: POV PHOTO OF PHONE. A realistic first-person shot of a hand holding an iPhone. The screen is displaying a viral Tweet/Post. The background is a blurry coffee shop or street (bokeh). Focus is sharp on the phone screen text.";
-             
-        case CreativeFormat.GMAIL_UX:
-            return "Style: GMAIL INBOX UI. A clean white interface. List of emails. The 'Target' email is highlighted or at the top. BOLD subject line. Star icon is yellow. Must look like a screenshot of a browser or mobile app inbox.";
+        // --- CAROUSEL SPECIALS ---
 
-        case CreativeFormat.DM_NOTIFICATION:
-        case CreativeFormat.REMINDER_NOTIF:
-            return "Style: IPHONE LOCKSCREEN NOTIFICATIONS. Background is a dimmed personal wallpaper. Foreground: A stack of 2-3 glassy notification bubbles (Glassmorphism). App icons (Green for Messages, Blue for Calendar) visible on the left of the bubble. Text is sharp black on translucent white.";
-
-        case CreativeFormat.CHAT_CONVERSATION:
-            return "Style: IMESSAGE/WHATSAPP SCREEN. Vertical layout. Chat bubbles. Incoming messages (Grey/White) on left. Outgoing messages (Blue/Green) on right. 'Read 10:41 AM' small text at bottom. Background is default chat wallpaper. Looks like a leaked private conversation.";
-
-        case CreativeFormat.SOCIAL_COMMENT_STACK:
-            return "Style: FLOATING COMMENT BUBBLES. A high-quality product or lifestyle shot in the background. OVERLAID: 3-4 distinct social media comment bubbles with profile pics. They are floating/stacked on top of the product to show social proof.";
-
-        case CreativeFormat.SEARCH_BAR:
-            return "Style: GOOGLE SEARCH HOMEPAGE. Clean white background. The Google logo (multi-colored) above. A search bar in the center with the query typed in. A blinking cursor '|' at the end of the text. Minimalist and spacious.";
-
-        // --- DATA & LOGIC (THE PROOF) ---
-        
-        case CreativeFormat.US_VS_THEM:
-            return "Style: SPLIT COMPARISON TABLE. Divide the image vertically. Left Side (Them): Desaturated, grey/red tones, 'X' icons, sad vibe. Right Side (Us): Vibrant, brand colors, Green Checkmark icons, happy vibe. Clear headers at top.";
-
-        case CreativeFormat.BEFORE_AFTER:
-        case CreativeFormat.OLD_ME_VS_NEW_ME:
-            return "Style: VISCERAL SPLIT SCREEN. A sharp vertical division line. Left: Darker lighting, messy, problem visible, sad posture. Right: Bright lighting, clean, solution visible, glowing posture. The contrast must be immediate.";
+        case CreativeFormat.CAROUSEL_EDUCATIONAL:
+            return "Style: INSTAGRAM SLIDE DECK. Desain flat vector dengan latar belakang pastel[cite: 272]. Tipografi bersih (Hierarchy: Header Besar, Body Kecil)[cite: 272]. Berfokus pada edukasi 'Unique Mechanism' secara bertahap[cite: 107, 187].";
             
-        case CreativeFormat.GRAPH_CHART:
-            return "Style: DATA VISUALIZATION. A clean upward-trending line graph or bar chart. The line is Green. The background is white or light grid. A red circle highlights the 'Breakthrough' point on the graph. It looks like a financial or health report.";
-            
-        case CreativeFormat.MECHANISM_XRAY:
-            return "Style: 3D X-RAY / CROSS-SECTION. A scientific visualization. Show the inside of the product or the human body. Glowing particles, layers revealed. High-tech, medical, or engineering aesthetic. Prove 'How it works'.";
-            
-        case CreativeFormat.ANNOTATED_PRODUCT:
-        case CreativeFormat.BENEFIT_POINTERS:
-            return "Style: PRODUCT ANATOMY. High-res hero shot of the product in center. Thin, elegant leader lines radiating out to specific parts. At the end of each line is a small text label. Clean studio lighting.";
+        case CreativeFormat.CAROUSEL_TESTIMONIAL:
+            return "Style: SOCIAL PROOF PILE. Tumpukan screenshot ulasan asli atau komentar media sosial yang berjejer[cite: 35]. Visual harus terlihat 'berantakan' tapi nyata untuk membangun faktor kepercayaan (Trust Factor)[cite: 6, 38].";
 
-        case CreativeFormat.TESTIMONIAL_HIGHLIGHT:
-            return "Style: HIGHLIGHTED DOCUMENT. A close-up photo of a printed page or a screen showing a text review. A bright NEON YELLOW highlighter marker has drawn a line over the most important sentence. Depth of field blurs the edges.";
-            
-        case CreativeFormat.VENN_DIAGRAM:
-            return "Style: VENN DIAGRAM. Two or three overlapping circles with distinct translucent colors. The center intersection is bright and glowing. Text labels floating in each section. Clean vector style.";
+        case CreativeFormat.CAROUSEL_PHOTO_DUMP:
+            return "Style: GEN-Z AESTHETIC. Fotografi menggunakan flash, tidak dikurasi, getaran 'messy-chic'[cite: 272]. Gabungan antara tekstur, close-up, dan foto gaya hidup dengan overlay butiran film (film grain)[cite: 272].";
 
-        // --- PATTERN INTERRUPT ---
-        
-        case CreativeFormat.UGLY_VISUAL:
-            return "Style: THE UGLY AD AESTHETIC. Intentionally bad design. Clashing colors (e.g. Yellow background with Red text). Use MS Paint style arrows drawn crudely. Low-resolution feel. It must look like a scam or a meme to break banner blindness. NO professional polish.";
-            
-        case CreativeFormat.MS_PAINT:
-            return "Style: MS PAINT DRAWING. Crude stick figures, bucket-fill colors, pixelated brush strokes. Looks like a 5-year-old or a shitposter made it. White canvas background.";
-            
-        case CreativeFormat.REDDIT_THREAD:
-            return "Style: REDDIT DARK MODE UI. Black background. Grey card container. Upvote/Downvote arrows (Orange/Blue) on the left. Title text in white. 'Join' button visible. Looks like a viral screenshot.";
-            
-        case CreativeFormat.STICKY_NOTE_REALISM:
-             return "Style: REAL STICKY NOTE. A macro photo of a yellow Post-it note stuck on a fridge, mirror, or laptop. Handwritten text in black Sharpie/Marker. Realistic paper texture and shadow.";
+        // --- PATTERN INTERRUPT (Breaking Banner Blindness [cite: 3]) ---
 
         case CreativeFormat.BIG_FONT:
-            return "Style: KINETIC TYPOGRAPHY. 80% of the image is text. Massive, bold, sans-serif font. High contrast (Black on Yellow, or White on Red). The text interacts with the background elements slightly.";
-            
+            return "Style: KINETIC TYPOGRAPHY. 80% gambar adalah teks[cite: 272]. Font sans-serif masif dan tebal[cite: 22, 150]. Kontras tinggi (Hitam di Kuning atau Putih di Merah) untuk menyebutkan gejala utama (Symptom) secara langsung[cite: 22].";
+
+        case CreativeFormat.GMAIL_UX:
+            return "Style: GMAIL INBOX UI. Antarmuka putih bersih dengan daftar email[cite: 24]. Subjek email harus memicu rasa ingin tahu (misal: 'We have to apologize')[cite: 24, 25]. Harus terlihat seperti screenshot browser atau aplikasi mobile asli[cite: 23].";
+
         case CreativeFormat.BILLBOARD:
-            return "Style: OUTDOOR BILLBOARD. A realistic photo of a billboard on a highway or Times Square. The ad content is displayed on the billboard structure. Cinematic lighting (sunset or city lights).";
+            return "Style: OUTDOOR BILLBOARD REALISM. Foto realistis papan reklame di jalan raya atau Times Square[cite: 27, 230]. Memanfaatkan 'Probability Bias' di mana orang terbiasa melihat iklan di struktur billboard fisik[cite: 27].";
 
-        // --- CAROUSELS ---
-        
-        case CreativeFormat.CAROUSEL_EDUCATIONAL:
-            return "Style: CAROUSEL SLIDE DECK. Flat vector design. Solid pastel background. Clean typography hierarchy (Big Header, Small Body). Icons illustrating the points. Looks like an Instagram educational post.";
-            
-        case CreativeFormat.CAROUSEL_PHOTO_DUMP:
-            return "Style: AESTHETIC PHOTO DUMP. Flash photography. Uncurated, messy-chic vibe. A mix of textures, close-ups, and lifestyle shots. Film grain overlay. Looks like a Gen-Z weekend update.";
+        case CreativeFormat.UGLY_VISUAL:
+            return "Style: THE UGLY AD AESTHETIC. Desain yang sengaja buruk dengan warna bentrok dan panah gaya MS Paint yang kasar[cite: 31, 32]. Harus terlihat seperti 'scam' atau meme untuk memutus pola visual pengguna (Pattern Interrupt)[cite: 7, 34].";
 
-        case CreativeFormat.PRESS_FEATURE:
-            return "Style: MAGAZINE SPREAD. A layout looking like Vogue, Forbes, or NYT. Serif typography. Professional photography. 'Featured in' badges visible. Authority and Trust aesthetic.";
-            
-        case CreativeFormat.LEAD_MAGNET_3D:
-             return "Style: 3D BOOK MOCKUP. A realistic 3D render of a book, PDF guide, or report. It's standing up or floating. Drop shadow. The cover design is visible and catchy. 'Free Download' badge.";
+        case CreativeFormat.MS_PAINT:
+            return "Style: AMATEUR DRAWING. Stick figures kasar dan sapuan kuas pixelated[cite: 34]. Terlihat seperti dibuat oleh anak kecil atau 'shitposter' untuk memicu 'Nostalgia Effect' pada audiens milenial[cite: 34].";
 
-        // --- DEFAULTS ---
-        case CreativeFormat.AESTHETIC_MINIMAL:
-            // REPLACED EDITORIAL WITH RAW MINIMALIST
-            return "Style: RAW MINIMALISM. Uncurated, flash photography against a plain wall. Hard shadows. Looks like an eBay listing photo or a quick snap sent to a friend. No filters.";
+        case CreativeFormat.REDDIT_THREAD:
+            return "Style: REDDIT DARK MODE. Latar belakang hitam dengan UI kartu abu-abu[cite: 38]. Ikon upvote/downvote berwarna Oranye/Biru di sebelah kiri[cite: 38]. Memberikan kesan testimoni komunitas yang jujur[cite: 38, 166].";
+
+        case CreativeFormat.MEME:
+            return "Style: INTERNET LANGUAGE. Menggunakan format meme populer (Before vs After)[cite: 41]. Brand berbicara menggunakan bahasa internet yang ingin dikonsumsi orang, bukan bahasa jualan[cite: 42].";
+
+        case CreativeFormat.LONG_TEXT:
+            return "Style: VSSL TEXT-ONLY. Paragraf panjang yang terstruktur dengan 'Slippery Slope' copywriting[cite: 28, 29]. Menggunakan cerita leads untuk membawa audiens dari tahap Unaware ke Most Aware secara perlahan[cite: 92, 114].";
+
+        case CreativeFormat.CARTOON:
+            return "Style: NON-THREATENING GRAPHICS. Ilustrasi kartun sederhana untuk menjelaskan masalah sensitif (seperti kesehatan mental atau pencernaan anak)[cite: 35, 36]. Mempermudah audiens mencerna pesan melalui storytelling visual yang ringan[cite: 37].";
+
+        case CreativeFormat.BEFORE_AFTER:
+            return "Style: VISCERAL CONTRAST. Garis pemisah vertikal yang tajam[cite: 143]. Kiri: Pencahayaan gelap, berantakan, masalah terlihat jelas[cite: 143]. Kanan: Pencahayaan terang, bersih, solusi (produk) terlihat memberikan hasil nyata[cite: 143].";
+
+        case CreativeFormat.WHITEBOARD:
+            return "Style: HANDWRITTEN EXPLANATION. Seseorang sedang menulis di papan tulis, menjelaskan diagram masalah atau hasil (Outcome) secara manual[cite: 39]. Terlihat sangat edukatif dan personal[cite: 39].";
+
+        case CreativeFormat.MECHANISM_XRAY:
+            return "Style: SCIENTIFIC VISUALIZATION. Tampilan 3D X-Ray atau potongan melintang yang menunjukkan cara kerja produk di dalam tubuh atau objek[cite: 272]. Menggunakan elemen partikel bercahaya untuk membuktikan 'Unique Mechanism'[cite: 107].";
+
+        // --- NATIVE / SOCIAL (Familiarity Bias [cite: 5, 35]) ---
+
+        case CreativeFormat.IG_STORY_TEXT:
+            return "Style: NATIVE IG STORY. Font 'Typewriter' sistem IG[cite: 272]. Sertakan Link Sticker di bagian bawah[cite: 272]. Foto latar belakang harus vertikal, grainy, hasil jepretan iPhone asli dengan flash[cite: 35].";
+
+        case CreativeFormat.TWITTER_REPOST:
+            return "Style: X/TWITTER UI. Screenshot postingan viral lengkap dengan PFP melingkar, handle (@name), dan engagement bar (Like, Retweet, Share)[cite: 38]. Harus terlihat tertanam dalam feed organik.";
+
+        case CreativeFormat.PHONE_NOTES:
+            return "Style: APPLE NOTES UI. Screenshot aplikasi Notes iPhone dengan tekstur kertas putih/kuning[cite: 19, 40]. Tambahkan garis bawah atau lingkaran merah buatan tangan untuk penekanan poin[cite: 40].";
+
+        case CreativeFormat.DM_NOTIFICATION:
+            return "Style: IPHONE LOCKSCREEN NOTIF. Latar belakang wallpaper personal yang redup[cite: 24]. Tumpukan bubble notifikasi pesan (Messages/WhatsApp) dengan teks hook yang memicu rasa penasaran[cite: 24, 25].";
 
         case CreativeFormat.UGC_MIRROR:
-            return "Style: Raw mirror selfie. Flash photography, messy room background. 100% authentic human connection.";
-        case CreativeFormat.CHECKLIST_TODO:
-            return "Style: Handwritten to-do list on a clipboard or notepad. Problems are crossed out, solutions are checked.";
+            return "Style: AUTHENTIC CONNECTION. Selfie cermin mentah dengan flash kamera[cite: 272]. Latar belakang kamar yang nyata/berantakan untuk menunjukkan hubungan manusia yang 100% otentik tanpa polesan studio[cite: 272].";
+
+        case CreativeFormat.CHAT_CONVERSATION:
+            return "Style: LEAKED CHAT SCREEN. Antarmuka WhatsApp/iMessage dengan bubble chat Biru/Hijau[cite: 35]. Harus terlihat seperti percakapan pribadi yang 'bocor' atau testimoni pelanggan yang sangat akrab[cite: 35].";
+
+        // --- LOGIC / CONVERSION ---
+
+        case CreativeFormat.US_VS_THEM:
+            return "Style: COMPARISON TABLE. Sisi Kiri (Them): Desaturasi, ikon 'X' merah, vibe sedih[cite: 272]. Sisi Kanan (Us): Warna brand cerah, ikon checkmark hijau, vibe bahagia[cite: 272]. Fokus pada perbandingan biaya atau efektivitas[cite: 145, 200].";
+
+        case CreativeFormat.VENN_DIAGRAM:
+            return "Style: LOGICAL INTERSECTION. Dua atau tiga lingkaran transparan yang tumpang tindih[cite: 272]. Titik temu di tengah dibuat bercahaya untuk menunjukkan 'Sweet Spot' atau solusi unik produk Anda[cite: 272].";
+
+        case CreativeFormat.TESTIMONIAL_HIGHLIGHT:
+            return "Style: HIGHLIGHTED DOCUMENT. Foto close-up halaman cetak atau ulasan teks dengan garis stabilo Kuning Neon pada kalimat terpenting[cite: 272]. Memberikan efek kedalaman bidang (depth of field)[cite: 272].";
+
+        case CreativeFormat.SEARCH_BAR:
+            return "Style: GOOGLE SEARCH UI. Latar belakang putih bersih dengan logo Google warna-warni[cite: 272]. Bilah pencarian di tengah dengan kueri masalah audiens yang sedang diketik dan kursor berkedip[cite: 272].";
+
+        case CreativeFormat.STICKY_NOTE_REALISM:
+            return "Style: REAL STICKY NOTE. Foto makro kertas Post-it kuning yang ditempelkan di cermin atau laptop[cite: 40]. Teks ditulis tangan dengan spidol hitam marker kasar untuk kesan urgensi[cite: 40].";
+
+        case CreativeFormat.ANNOTATED_PRODUCT:
+            return "Style: PRODUCT ANATOMY. Foto produk mentah di tengah dengan garis penunjuk tipis yang mengarah ke bagian spesifik[cite: 272]. Berfungsi untuk menjelaskan fitur teknis secara visual (Anatomy of Benefit)[cite: 272].";
 
         default:
-            return "Style: High-quality, native social media asset. Realistic lighting, sharp focus, authentic texture. Avoid generic stock photo look.";
+            return "Style: AMATEUR UGC. Utamakan keaslian (Authenticity) daripada estetika studio[cite: 5, 6]. Visual harus 'Thoughtful' dengan data atau insight di baliknya[cite: 15].";
     }
 };
+
 
 export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<string> => {
     const { 
@@ -148,19 +163,6 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     // LEVEL 3: PSYCHOLOGICAL MOOD (MASS DESIRE MAPPING)
     const massDesire = fullStoryContext?.massDesire;
     const desireType = massDesire?.type || "General";
-    
-    // DEFINE DEFAULT MOOD BASED ON DESIRE TYPE
-    let psychologicalMood = "MOOD: Natural, balanced daylight. Trustworthy and clear.";
-    
-    if (desireType.includes("Survival") || desireType.includes("Pain") || desireType.includes("Fear")) {
-        psychologicalMood = "MOOD: Dark, shadowy, high contrast (Chiaroscuro). A sense of urgency and danger. Cold tones (Blue/Grey/Green).";
-    } else if (desireType.includes("Food") || desireType.includes("Comfort") || desireType.includes("Enjoyment")) {
-        psychologicalMood = "MOOD: Warm, cozy, soft lighting. Golden hour. Comforting textures (wood, fabric). Inviting.";
-    } else if (desireType.includes("Sexual") || desireType.includes("Superiority") || desireType.includes("Status")) {
-        psychologicalMood = "MOOD: High-key, aspirational, glamour lighting. Sharp focus. Luxurious vibe. Purple/Gold accents.";
-    } else if (desireType.includes("Care") || desireType.includes("Loved Ones")) {
-        psychologicalMood = "MOOD: Soft, ethereal, airy. High exposure. Pastoral or domestic warmth.";
-    }
 
     // MANDATORY NATIVE/UGLY STYLE OVERRIDE
     // We ignore previous conditional logic and force the Amateur aesthetic.
@@ -180,7 +182,7 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
         psychology: {
             coreDrive: desireType,
             deepestDesire: massDesire?.headline || "General Desire",
-            lightingDirective: psychologicalMood
+            
         },
         persona: {
             identity: rawPersona?.profile || "General Audience",
@@ -224,7 +226,7 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     4. NO STOCK LOOK: ${styleInstruction}. Make it "Thoughtful but not pretty".
     5. TEXT RENDERING: The image MUST include the text "${embeddedText}" clearly visible in the scene (e.g., on the screen, sign, or overlay).
     6. CONGRUENCE: The visual must prove the text. "${congruenceRationale || 'Visual evidence of the claim'}".
-    7. PSYCHOLOGICAL MOOD: The lighting and vibe must reflect the "${desireType}". ${psychologicalMood}.
+    7. PSYCHOLOGICAL MOOD: The lighting and vibe must reflect the "${desireType}.
     
     --- TECHNICAL PARAMETERS ---
     - Style Enhancer: ${enhancer}

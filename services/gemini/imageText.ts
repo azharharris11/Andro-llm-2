@@ -216,15 +216,17 @@ export const generateVisualText = async (
         
         TASK: Transform the Marketing Hook into a visual text string for a NATIVE AD.
         
-        # NATIVE AD FORMULA:
-        1. KEYWORD: Use terms relevant to the audience's specific problem.
-        2. EMOTION: Focus on the "vulnerable/venting" (curhat) tone.
-        3. OUTCOME: Emphasize the transformation, not the features.
-        
-        # PRINCIPLE: 
-        - "Thoughtful but Not Pretty".
-        - Avoid formal marketing dictionary.
-        - Use "I/Me/Aku" perspective (Authenticity Bias).
+        # NATIVE AD TEXT FORMULA (MANDATORY):
+        The text must follow this psychological flow (Thoughtful but Not Pretty):
+        1. **KEYWORD**: Start with the specific problem/trigger (e.g., "Jerawat Batu", "Susah Tidur").
+        2. **EMOTION**: Use "I/Me/Aku" perspective. Express vulnerability or frustration (e.g., "Frustasi banget", "Capek nyobain").
+        3. **OUTCOME**: The raw result, not the feature (e.g., "Akhirnya kempes", "Bisa tidur pules").
+
+        # ANTI-BRANDING RULES:
+        - NO Slogans (e.g., "Buy the best sleep mask").
+        - NO Title Case (Use sentence case or lowercase for authenticity).
+        - NO Exclamation marks!!! (unless venting anger).
+        - Write like a user texting a friend.
         
         ORIGINAL HOOK: "${cleanAngle}"
         
