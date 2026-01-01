@@ -21,12 +21,25 @@ export const generateSalesLetter = async (
   story: StoryOption,
   bigIdea: BigIdeaOption,
   mechanism: MechanismOption,
-  hook: string
+  hook: string,
+  coliseumKeywords: string[] = [] // NEW PARAMETER
 ): Promise<GenResult<string>> => {
   const model = "gemini-3-flash-preview";
   const country = project.targetCountry || "Indonesia";
   const awareness = project.marketAwareness || MarketAwareness.PROBLEM_AWARE;
   
+  // 1. Build Keyword Instruction
+  let keywordInstruction = "";
+  if (coliseumKeywords && coliseumKeywords.length > 0) {
+      keywordInstruction = `
+      **CRITICAL VOCABULARY RULE (THE TRIBE LANGUAGE):**
+      You MUST use the following insider slang/keywords naturally within the story:
+      [${coliseumKeywords.join(", ")}].
+      
+      DO NOT TRANSLATE THESE. Use them raw to prove we are part of the community.
+      `;
+  }
+
   let structureInstruction = "";
   if (awareness === MarketAwareness.UNAWARE) {
       structureInstruction = `
@@ -80,6 +93,8 @@ export const generateSalesLetter = async (
     
     PRODUCT DETAILS:
     ${project.productDescription}
+
+    ${keywordInstruction}
     
     FORMAT: Markdown. Short paragraphs (1-2 sentences). Use bolding for emphasis on core benefits.
   `;
@@ -122,7 +137,8 @@ export const generateCreativeStrategy = async (
   
   // CONTEXT AGGREGATION: COLISEUM KEYWORDS (The Secret Sauce)
   // Check if keywords exist in persona meta or context, otherwise fallback to empty.
-  const coliseumKeywords = persona.meta?.coliseumKeywords || [];
+  // We explicitly look in 'meta' which usually holds the raw persona object from generatePersonas
+  const coliseumKeywords = persona.meta?.coliseumKeywords || persona.coliseumKeywords || [];
   let keywordInstruction = "";
   
   if (coliseumKeywords.length > 0) {
@@ -130,7 +146,7 @@ export const generateCreativeStrategy = async (
       **MANDATORY VOCABULARY (Coliseum Keywords):**
       You MUST use the following exact insider words/slang naturally in the copy: 
       [${coliseumKeywords.join(", ")}].
-      Do NOT translate these words. Use them to prove you belong to the tribe.
+      Do NOT translate these words. Use them raw to prove you belong to the tribe.
       `;
   } else if (register === LanguageRegister.SLANG) {
       keywordInstruction = `

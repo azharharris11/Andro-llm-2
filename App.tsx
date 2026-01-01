@@ -344,7 +344,11 @@ const App: React.FC = () => {
 
       if (action === 'generate_mechanisms' && node.bigIdeaData) {
           handleUpdateNode(nodeId, { isLoading: true });
-          const result = await GeminiService.generateMechanisms(project, node.bigIdeaData);
+          const ancestry = getAncestryContext(nodeId);
+          
+          // CONTEXT PASSING: PASS PERSONA FOR NAMING LOGIC
+          const result = await GeminiService.generateMechanisms(project, node.bigIdeaData, ancestry.meta);
+          
           handleUpdateNode(nodeId, { isLoading: false });
           if (result.data) {
               result.data.forEach((mech: MechanismOption, i: number) => {
@@ -375,7 +379,16 @@ const App: React.FC = () => {
            const safeStory = story || { narrative: node.description || "Brand Story", emotionalTheme: "Hope" };
 
            handleUpdateNode(nodeId, { isLoading: true });
-           const result = await GeminiService.generateHooks(project, safeBigIdea, safeMechanism, safeStory);
+           
+           // CONTEXT PASSING: PASS MASS DESIRE FOR UNAWARE HOOKS
+           const result = await GeminiService.generateHooks(
+               project, 
+               safeBigIdea, 
+               safeMechanism, 
+               safeStory, 
+               ancestry.massDesireData // Passing the desire
+           );
+           
            handleUpdateNode(nodeId, { isLoading: false });
            if (result.data) {
                result.data.forEach((hook: string, i: number) => {
@@ -388,6 +401,7 @@ const App: React.FC = () => {
                        mechanismData: safeMechanism,
                        bigIdeaData: safeBigIdea,
                        storyData: safeStory,
+                       massDesireData: ancestry.massDesireData,
                        x: node.x + 400,
                        y: node.y + (i - 2) * 150,
                        parentId: nodeId
@@ -491,8 +505,11 @@ const App: React.FC = () => {
           const bigIdea = ancestry.bigIdeaData || { headline: "New Opportunity", concept: "Better Way", targetBelief: "Old Way" };
           const mechanism = ancestry.mechanismData || { scientificPseudo: "Smart Tech", ums: "Works Fast", ump: "Slow Results" };
           const hook = node.adCopy?.headline || node.title;
+          
+          // CONTEXT PASSING: PASS COLISEUM KEYWORDS FOR COPYWRITING
+          const coliseumKeywords = ancestry.meta?.coliseumKeywords || [];
 
-          const result = await GeminiService.generateSalesLetter(project, story, bigIdea, mechanism, hook);
+          const result = await GeminiService.generateSalesLetter(project, story, bigIdea, mechanism, hook, coliseumKeywords);
           handleUpdateNode(nodeId, { isLoading: false });
           
           if (result.data) {

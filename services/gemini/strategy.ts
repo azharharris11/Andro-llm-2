@@ -208,11 +208,29 @@ export const generateBigIdeas = async (
 };
 
 // --- 4. MECHANISM GENERATOR (AWAM VERSION) ---
-export const generateMechanisms = async (project: ProjectContext, bigIdea: BigIdeaOption): Promise<GenResult<MechanismOption[]>> => {
+export const generateMechanisms = async (
+    project: ProjectContext, 
+    bigIdea: BigIdeaOption,
+    persona?: any // NEW: Add Persona Context for tailoring naming
+): Promise<GenResult<MechanismOption[]>> => {
   const model = "gemini-3-flash-preview";
   const register = project.languageRegister || LanguageRegister.CASUAL;
   const langInstruction = getLanguageInstruction(project.targetCountry || "Indonesia", register);
   
+  let personaInstruction = "";
+  if (persona) {
+      personaInstruction = `
+      **TARGET PERSONA CONTEXT:**
+      Name: ${persona.name}
+      Profile: ${persona.profile}
+      
+      ADJUSTMENT RULE:
+      - If the persona is "Skeptic/Logic": Naming must sound secure, tested, and reliable (e.g., "Protocol", "Shield").
+      - If the persona is "Anxious/Urgent": Naming must sound fast and instant (e.g., "Flash", "Zap", "Snap").
+      - If the persona is "Status/Aspirer": Naming must sound premium and exclusive (e.g., "Gold Standard", "Elite").
+      `;
+  }
+
   const prompt = `
     ROLE: Copywriter Spesialis Bahasa Awam.
     TASK: Jelaskan cara kerja produk dengan bahasa yang sangat simpel (Bahasa Warung/Pasar).
@@ -221,6 +239,8 @@ export const generateMechanisms = async (project: ProjectContext, bigIdea: BigId
     Product: ${project.productName}
     Deskripsi: ${project.productDescription}
     Big Idea: ${bigIdea.concept}
+    
+    ${personaInstruction}
 
     RULES PENAMAAN (scientificPseudo):
     - JANGAN pakai istilah lab/teknis: Protokol, Enkapsulasi, Bio-aktif.
@@ -267,7 +287,8 @@ export const generateHooks = async (
   project: ProjectContext, 
   bigIdea: BigIdeaOption, 
   mechanism: MechanismOption,
-  story: StoryOption
+  story: StoryOption,
+  massDesire?: MassDesireOption // NEW: Add Mass Desire Context
 ): Promise<GenResult<string[]>> => {
   const model = "gemini-3-flash-preview";
   const strategyMode = project.strategyMode || StrategyMode.LOGIC;
@@ -282,7 +303,8 @@ export const generateHooks = async (
       1. **BANNED TOPICS:** Do NOT mention the product name, the brand, or the specific solution in the hook.
       2. **PATTERN INTERRUPT:** Start with a "Weird Fact", a "Common Lie", or a "Polarizing Opinion".
       3. **VISUAL CUE:** Reference something visual in the user's daily life.
-      4. **EXAMPLES:** 
+      4. **TRIGGER THE DESIRE:** The hook must implicitly promise "${massDesire?.headline || 'Relief'}" without stating it directly.
+      5. **EXAMPLES:** 
          - "If your sink smells like this..." (Home)
          - "Stop throwing away rice water." (Beauty)
          - "The real reason you wake up at 3AM." (Health)
@@ -304,6 +326,7 @@ export const generateHooks = async (
     UMP: ${mechanism.ump}
     UMS: ${mechanism.ums}
     Mode: ${strategyMode}
+    ${massDesire ? `Core Desire: ${massDesire.headline}` : ''}
     
     ${hookInstruction}
 
