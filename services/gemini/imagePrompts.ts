@@ -146,20 +146,6 @@ export const generateAIWrittenPrompt = async (ctx: PromptContext): Promise<strin
     const massDesire = fullStoryContext?.massDesire;
     const desireType = massDesire?.type || "General";
     
-    // Map Life Force 8 to Lighting/Mood
-    let psychologicalMood = "Lighting: Natural, authentic.";
-    const desireLower = desireType.toLowerCase();
-
-    if (desireLower.includes("pain") || desireLower.includes("survival") || desireLower.includes("fear")) {
-        psychologicalMood = "MOOD: High Contrast, Moody, Dramatic Shadows. The lighting should evoke a sense of urgency or problem awareness. slightly desaturated.";
-    } else if (desireLower.includes("status") || desireLower.includes("superiority") || desireLower.includes("winning")) {
-        psychologicalMood = "MOOD: High Key, Bright, Golden Hour, Spotlight. The lighting should evoke aspiration, premium quality, and success. Rich colors.";
-    } else if (desireLower.includes("food") || desireLower.includes("comfort")) {
-        psychologicalMood = "MOOD: Warm, Soft, Cozy, Interior lighting. The lighting should evoke safety and satisfaction. Warm color temperature.";
-    } else if (desireLower.includes("sex") || desireLower.includes("social")) {
-        psychologicalMood = "MOOD: Vibrant, Dynamic, Party or Intimate lighting. Focus on human connection and energy.";
-    }
-
     // Baseline Style Override for Native Formats
     const isNativeStory = [
         CreativeFormat.IG_STORY_TEXT, 
