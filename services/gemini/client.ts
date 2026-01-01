@@ -8,26 +8,45 @@ export const ai = new GoogleGenAI({ apiKey });
 // Shared Utility for Robust JSON Extraction
 export function extractJSON<T>(text: string): T {
   try {
-    // 1. Try to find JSON inside markdown code blocks first
-    const codeBlockMatch = text.match(/```json([\s\S]*?)```/);
-    if (codeBlockMatch && codeBlockMatch[1]) {
-      return JSON.parse(codeBlockMatch[1].trim()) as T;
+    if (!text) return {} as T;
+
+    // 1. Strip Markdown Code Blocks (```json ... ```)
+    let cleanText = text.replace(/```json/gi, "").replace(/```/g, "").trim();
+
+    // 2. Find the outer-most JSON object or array
+    const firstBrace = cleanText.indexOf('{');
+    const firstBracket = cleanText.indexOf('[');
+    
+    let startIndex = -1;
+    
+    // Determine if it's likely an Object or an Array based on which comes first
+    if (firstBrace !== -1 && firstBracket !== -1) {
+        startIndex = Math.min(firstBrace, firstBracket);
+    } else if (firstBrace !== -1) {
+        startIndex = firstBrace;
+    } else if (firstBracket !== -1) {
+        startIndex = firstBracket;
     }
 
-    // 2. If no code block, try to find the first '{' and last '}'
-    const firstOpen = text.indexOf('{');
-    const lastClose = text.lastIndexOf('}');
-    
-    if (firstOpen !== -1 && lastClose !== -1) {
-        const jsonStr = text.substring(firstOpen, lastClose + 1);
-        return JSON.parse(jsonStr) as T;
+    if (startIndex !== -1) {
+        // Slice from the start character
+        cleanText = cleanText.substring(startIndex);
+        
+        // Find the last closing character
+        const lastBrace = cleanText.lastIndexOf('}');
+        const lastBracket = cleanText.lastIndexOf(']');
+        const endIndex = Math.max(lastBrace, lastBracket);
+        
+        if (endIndex !== -1) {
+            cleanText = cleanText.substring(0, endIndex + 1);
+        }
     }
-    
-    // 3. Last resort: Try parsing the whole text
-    return JSON.parse(text) as T;
+
+    return JSON.parse(cleanText) as T;
   } catch (e) {
-    console.error("JSON Parse Error", e, text);
-    // Return empty object to prevent crash, but log error
+    console.warn("JSON Extraction Failed. Raw text:", text);
+    console.error(e);
+    // Return empty object/array based on expectation to prevent crash
     return {} as T;
   }
 }

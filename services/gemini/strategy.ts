@@ -278,17 +278,18 @@ export const generateHooks = async (
   let hookInstruction = "";
   if (awareness === MarketAwareness.UNAWARE) {
       hookInstruction = `
-      **UNAWARE STAGE HOOKS (CRITICAL):**
-      You MUST NOT mention the solution or the product.
-      Focus strictly on:
-      1. **Behaviors:** "The specific weird thing you do..." (e.g. "The sound Max makes at 2am")
-      2. **Experiences:** "The moment you realize..."
-      3. **Emotions:** "The shame I felt when..."
-      Target the *symptom* or the *situation*, not the cure.
+      **UNAWARE STAGE HOOKS (RADICAL & NATIVE):**
+      1. **BANNED TOPICS:** Do NOT mention the product name, the brand, or the specific solution in the hook.
+      2. **PATTERN INTERRUPT:** Start with a "Weird Fact", a "Common Lie", or a "Polarizing Opinion".
+      3. **VISUAL CUE:** Reference something visual in the user's daily life.
+      4. **EXAMPLES:** 
+         - "If your sink smells like this..." (Home)
+         - "Stop throwing away rice water." (Beauty)
+         - "The real reason you wake up at 3AM." (Health)
       `;
   } else {
       hookInstruction = `
-      **DIRECT RESPONSE HOOKS:**
+      **DIRECT RESPONSE HOOKS (OFFER/MECHANISM):**
       Focus on the Mechanism, the Benefit, or the Offer.
       ${strategyMode === StrategyMode.OFFER ? 'Boleh sebut nama produk: ' + project.productName : 'JANGAN sebut nama produk. Gunakan: "Trik ini", "Rahasia ini", "Satu hal ini".'}
       `;

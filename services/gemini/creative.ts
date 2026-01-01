@@ -119,6 +119,26 @@ export const generateCreativeStrategy = async (
   const mech = fullStrategyContext?.mechanismData;
   const bigIdea = fullStrategyContext?.bigIdeaData;
   const story = fullStrategyContext?.storyData;
+  
+  // CONTEXT AGGREGATION: COLISEUM KEYWORDS (The Secret Sauce)
+  // Check if keywords exist in persona meta or context, otherwise fallback to empty.
+  const coliseumKeywords = persona.meta?.coliseumKeywords || [];
+  let keywordInstruction = "";
+  
+  if (coliseumKeywords.length > 0) {
+      keywordInstruction = `
+      **MANDATORY VOCABULARY (Coliseum Keywords):**
+      You MUST use the following exact insider words/slang naturally in the copy: 
+      [${coliseumKeywords.join(", ")}].
+      Do NOT translate these words. Use them to prove you belong to the tribe.
+      `;
+  } else if (register === LanguageRegister.SLANG) {
+      keywordInstruction = `
+      **MANDATORY TONE:**
+      Use NATIVE slang. If Indonesian: "Gue/Lo", "Anjrit", "Sumpah", "Valid".
+      If English: "ngl", "fr", "literally".
+      `;
+  }
 
   // DYNAMIC STRATEGY DIRECTION
   let strategyInstruction = "";
@@ -181,6 +201,8 @@ export const generateCreativeStrategy = async (
     Symptoms: ${personaPain}
     ${story ? `Narrative Context: ${story.narrative}` : ''}
     ${bigIdea ? `Big Idea Shift: ${bigIdea.concept}` : ''}
+    
+    ${keywordInstruction}
 
     **THE 80/20 RULE (CRITICAL):**
     - **80% MESSAGING:** The primary goal is to communicate the ANGLE ("${angle}"). The visual is just a vehicle for this message.
